@@ -166,7 +166,7 @@ function Masthead({ u }: { u: Unstill }) {
       <div className={`tally ${live ? "on" : ""} ${u.phase === "paused" ? "held" : ""}`}>
         <span className="tally-dot" aria-hidden />
         <span className="mono">
-          {u.phase === "live" ? "Live" : u.phase === "paused" ? "Held" : u.phase === "rolling" ? "Rolling" : u.connected ? "Ready" : "Offline"}
+          {u.phase === "live" ? "Live" : u.phase === "paused" ? "Held" : u.phase === "rolling" ? "Rolling" : u.connected ? "Ready" : "Standby"}
         </span>
       </div>
     </header>
