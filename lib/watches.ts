@@ -91,9 +91,9 @@ export const HOURS: AxisOption<Hour>[] = [
     value: "night",
     label: "Night",
     key: "4",
-    state: (n) => `${sky(n, "a black night sky")}, ${n.lights} casting warm pools of light`,
+    state: (n) => `${sky(n, "a deep blue night sky")}, ${n.lights} glowing brightly and casting warm pools of light`,
     shift: (n) =>
-      `Night falls. ${sky(n, "the sky turns black")}, and ${n.lights} cast warm pools of light on ${n.ground}.`,
+      `Night falls. ${sky(n, "the sky deepens to night blue")}, and ${n.lights} glow brightly, casting warm pools of light on ${n.ground}.`,
   },
 ];
 

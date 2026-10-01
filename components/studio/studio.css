@@ -583,7 +583,8 @@
   background: var(--night-3);
 }
 
-.seg button.on {
+.seg button.on,
+.seg button.on:hover:not(:disabled) {
   background: var(--amber);
   color: var(--amber-ink);
   font-weight: 600;

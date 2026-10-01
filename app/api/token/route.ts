@@ -10,7 +10,7 @@ export async function POST() {
   const apiKey = process.env.REACTOR_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { error: "REACTOR_API_KEY is not set. Add it to .env.local and restart the server." },
+      { error: "REACTOR_API_KEY is not set. Add it to .env.local locally, or to Environment Variables on Vercel, then redeploy." },
       { status: 500 },
     );
   }
