@@ -204,6 +204,27 @@
   line-height: 1.5;
 }
 
+.poster-roll {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+  min-height: 48px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--chalk);
+  color: var(--night);
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 0 0 0 6px rgba(229, 72, 77, 0.14);
+}
+
+.poster-roll:hover:not(:disabled) {
+  background: #fff;
+}
+
 .veil {
   position: absolute;
   inset: 0;

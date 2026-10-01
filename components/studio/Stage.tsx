@@ -25,6 +25,12 @@ export function Stage({ u }: { u: Unstill }) {
             <p className="poster-sector mono">{u.watch.sector}</p>
             <h2 className="poster-name serif">{u.watch.name}</h2>
             <p className="poster-line">{u.watch.logline}</p>
+            {u.phase === "idle" && (
+              <button className="poster-roll" onClick={u.roll} disabled={u.busy}>
+                <span className="roll-dot" aria-hidden />
+                {u.busy ? "Connecting" : "Roll · go live"}
+              </button>
+            )}
           </div>
         ) : u.photoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
