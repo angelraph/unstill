@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { ClientStudio } from "@/components/studio/ClientStudio";
 
 export const metadata: Metadata = {
-  title: "Studio · UNSTILL",
+  title: "Studio",
 };
 
 export default function StudioPage() {

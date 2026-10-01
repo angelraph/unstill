@@ -4,6 +4,7 @@ import { ReactorProvider } from "@reactor-team/js-sdk";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { Logo } from "@/components/brand/Logo";
 import { Deck } from "@/components/studio/Deck";
 import { Ledger } from "@/components/studio/Ledger";
 import { Stage } from "@/components/studio/Stage";
@@ -48,11 +49,42 @@ type Tab = "direct" | "takes" | "log";
 function StudioBody({ getJwt, onDisconnect }: { getJwt: () => Promise<string>; onDisconnect: () => void }) {
   const u = useUnstill(getJwt);
   const [tab, setTab] = useState<Tab>("direct");
+  const [thumbs, setThumbs] = useState<Record<string, string>>({});
 
   // A fresh session needs a fresh token.
   useEffect(() => {
     if (u.status === "disconnected") onDisconnect();
   }, [u.status, onDisconnect]);
+
+  // Open a Watch from a link such as /studio?watch=bay.
+  const { chooseWatch } = u;
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("watch");
+    if (id) chooseWatch(id);
+  }, [chooseWatch]);
+
+  // Filmstrip: grab a frame from the live picture once each beat has had time to land.
+  const latestId = u.log[0]?.id;
+  useEffect(() => {
+    if (!latestId) return;
+    const timer = setTimeout(() => {
+      const video = document.querySelector<HTMLVideoElement>(".frame video");
+      if (!video || !video.videoWidth) return;
+      const canvas = document.createElement("canvas");
+      canvas.width = 240;
+      canvas.height = 135;
+      canvas.getContext("2d")?.drawImage(video, 0, 0, 240, 135);
+      try {
+        const data = canvas.toDataURL("image/jpeg", 0.7);
+        setThumbs((t) => ({ ...t, [latestId]: data }));
+      } catch {
+        // a tainted canvas leaves the log without a thumbnail
+      }
+    }, 3600);
+    return () => clearTimeout(timer);
+  }, [latestId]);
+
+  const message = u.error ? friendly(u.error) : u.notice;
 
   return (
     <div className="studio" data-tab={tab}>
@@ -63,7 +95,7 @@ function StudioBody({ getJwt, onDisconnect }: { getJwt: () => Promise<string>; o
           <Transport u={u} />
           {(u.error || u.notice) && (
             <div className={`banner ${u.error ? "banner-error" : ""}`} role={u.error ? "alert" : "status"}>
-              <span>{u.error || u.notice}</span>
+              <span>{message}</span>
               {u.error && (
                 <button className="banner-close" onClick={u.clearError} aria-label="Dismiss">
                   Dismiss
@@ -85,10 +117,19 @@ function StudioBody({ getJwt, onDisconnect }: { getJwt: () => Promise<string>; o
           <Deck u={u} />
         </aside>
 
-        <Ledger u={u} />
+        <Ledger u={u} thumbs={thumbs} />
       </main>
     </div>
   );
+}
+
+function friendly(error: string) {
+  if (/credits_depleted|402/.test(error)) {
+    return "The Reactor account behind this studio is out of credits, so a live session cannot start. Add credits at reactor.inc or contact support@visko.ai.";
+  }
+  if (/REACTOR_API_KEY/.test(error)) return error;
+  if (/401|unauthori/i.test(error)) return "The Reactor key was rejected. Check REACTOR_API_KEY and redeploy.";
+  return error;
 }
 
 function Masthead({ u }: { u: Unstill }) {
@@ -96,9 +137,14 @@ function Masthead({ u }: { u: Unstill }) {
   const live = u.phase === "live";
   return (
     <header className="masthead">
-      <Link href="/" className="wordmark" aria-label="UNSTILL, back to the brief">
-        UNSTILL
+      <Link href="/" className="wordmark" aria-label="UNSTILL home">
+        <Logo size={24} />
       </Link>
+      <nav className="studio-links" aria-label="Site">
+        <Link href="/watches">Watches</Link>
+        <Link href="/docs">Docs</Link>
+        <Link href="/faq">FAQ</Link>
+      </nav>
       <dl className="slate mono">
         <div>
           <dt>Watch</dt>

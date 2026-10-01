@@ -79,6 +79,66 @@ button:disabled {
   font-weight: 400;
 }
 
+/* Brand */
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #f3ede2;
+  text-decoration: none;
+}
+
+.logo-mark {
+  flex: none;
+  overflow: visible;
+}
+
+.logo-text {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.logo-word {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: #f3ede2;
+}
+
+.logo-tag {
+  margin-top: 6px;
+  font-family: var(--font-sans), sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #e9a443;
+}
+
+.logo-animated .logo-frame {
+  animation: frameIn 1s cubic-bezier(0.2, 0.7, 0.1, 1) both;
+}
+
+.logo-animated .logo-orbit {
+  stroke-dasharray: 130;
+  stroke-dashoffset: 130;
+  animation: orbitDraw 1.4s 0.3s cubic-bezier(0.2, 0.7, 0.1, 1) forwards;
+}
+
+@keyframes frameIn {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+}
+
+@keyframes orbitDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

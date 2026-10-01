@@ -5,16 +5,16 @@ import { useRef } from "react";
 import type { Unstill } from "@/hooks/use-unstill";
 import { exportTake, parseTake } from "@/lib/take";
 
-export function Ledger({ u }: { u: Unstill }) {
+export function Ledger({ u, thumbs }: { u: Unstill; thumbs: Record<string, string> }) {
   return (
     <div className="ledger">
-      <WatchLog u={u} />
+      <WatchLog u={u} thumbs={thumbs} />
       <Takes u={u} />
     </div>
   );
 }
 
-function WatchLog({ u }: { u: Unstill }) {
+function WatchLog({ u, thumbs }: { u: Unstill; thumbs: Record<string, string> }) {
   return (
     <section className="ledger-panel panel-log" aria-label="Watch log">
       <header className="section-head">
@@ -32,6 +32,12 @@ function WatchLog({ u }: { u: Unstill }) {
                 <p className="log-label">{entry.label}</p>
                 <p className="log-prompt">{entry.prompt}</p>
               </div>
+              {thumbs[entry.id] ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img className="log-thumb" src={thumbs[entry.id]} alt={`Frame after ${entry.label}`} />
+              ) : (
+                <span className="log-thumb log-thumb-empty" aria-hidden />
+              )}
             </li>
           ))}
         </ol>
