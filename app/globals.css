@@ -1,0 +1,98 @@
+:root {
+  --paper: #f3efe6;
+  --paper-2: #ebe5d8;
+  --ink: #16140f;
+  --ink-2: #3a362e;
+  --muted: #6e675a;
+  --rule: #d6cfbf;
+  --accent: #a8331f;
+
+  --night: #0e0d0b;
+  --night-1: #151411;
+  --night-2: #1c1a16;
+  --night-3: #26231e;
+  --line: #2f2c26;
+  --line-2: #3d3931;
+  --chalk: #ece6d9;
+  --chalk-2: #c9c2b3;
+  --dim: #8f887a;
+  --amber: #e2a43b;
+  --amber-ink: #1a1408;
+  --tally: #e5484d;
+  --ok: #7fb685;
+
+  --font-serif: "Instrument Serif", Georgia, serif;
+  --radius: 6px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  background: var(--night);
+  color: var(--chalk);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-feature-settings: "zero" 1;
+}
+
+.serif {
+  font-family: var(--font-serif);
+  font-weight: 400;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
