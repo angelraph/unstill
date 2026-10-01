@@ -1,0 +1,297 @@
+/* Watches: an off white stage, each place printed like a film in a catalog. */
+
+.reel-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 48px;
+}
+
+.reel-index a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 16px;
+  border: 1px solid var(--hair-2);
+  border-radius: 999px;
+  color: var(--fg);
+  font-size: 14px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.reel-index a:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.reel-index .mono {
+  font-size: 10.5px;
+  opacity: 0.6;
+}
+
+.reel {
+  padding-top: clamp(72px, 10vw, 128px);
+  padding-bottom: clamp(72px, 10vw, 128px);
+  border-bottom: 1px solid var(--hair);
+  scroll-margin-top: 40px;
+}
+
+.reel-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 0.9fr);
+  gap: clamp(20px, 3vw, 48px);
+  align-items: end;
+  padding-bottom: 28px;
+  margin-bottom: 36px;
+  border-bottom: 1px solid var(--ink);
+}
+
+.reel-head .eyebrow {
+  margin-bottom: 10px;
+}
+
+.reel-n {
+  font-size: clamp(64px, 9vw, 132px);
+  line-height: 0.8;
+  color: var(--accent);
+}
+
+.reel-logline {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(20px, 2vw, 28px);
+  line-height: 1.25;
+  color: var(--ink-2);
+}
+
+.reel-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 56px);
+  align-items: start;
+}
+
+/* Playable preview */
+
+.wp-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #000;
+}
+
+.wp-controls {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.wp-row {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+
+.wp-axis {
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+.wp-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.wp-options button {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--hair-2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 13px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.wp-options button:hover {
+  border-color: var(--ink);
+}
+
+.wp-options button.on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+/* Credits column */
+
+.reel-credits {
+  display: grid;
+  gap: 28px;
+}
+
+.credit-title {
+  margin: 0 0 10px;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+.credit-text {
+  margin: 0;
+  font-size: 15px;
+}
+
+.credit-list,
+.credit-cue {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.credit-list li,
+.credit-cue li {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 9px 0;
+  border-top: 1px solid var(--hair);
+  font-size: 15px;
+}
+
+.credit-list li span {
+  flex: 1;
+}
+
+.credit-list kbd,
+.vocab kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border: 1px solid var(--hair-2);
+  border-radius: 4px;
+  font-size: 11px;
+  color: var(--ink-2);
+  background: var(--raise);
+}
+
+.credit-cue li .mono:first-child {
+  font-size: 11px;
+  color: var(--accent);
+}
+
+.credit-cue li span:nth-child(2) {
+  flex: 1;
+}
+
+.credit-hold {
+  font-size: 11px;
+  color: var(--fg-3);
+}
+
+.reel-cta {
+  justify-self: start;
+}
+
+/* Photo */
+
+.photo-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.photo-step {
+  padding: 28px;
+  border: 1px solid var(--hair-2);
+  border-radius: 12px;
+  background: var(--raise);
+}
+
+.photo-step .mono {
+  font-size: 11px;
+  color: var(--accent);
+}
+
+.photo-step h3 {
+  margin: 36px 0 10px;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.photo-step p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+/* Vocabulary spec table */
+
+.vocab {
+  border-top: 1px solid var(--ink);
+}
+
+.vocab-row {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--hair);
+}
+
+.vocab-axis {
+  margin: 0;
+  font-size: 34px;
+}
+
+.vocab ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  font-size: 16px;
+}
+
+.vocab li {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .reel-head {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .reel-logline {
+    grid-column: 1 / -1;
+  }
+  .reel-body {
+    grid-template-columns: 1fr;
+  }
+  .wp-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .photo-steps {
+    grid-template-columns: 1fr;
+  }
+  .vocab-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}

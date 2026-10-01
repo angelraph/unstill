@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import type { Unstill } from "@/hooks/use-unstill";
 import { exportTake, parseTake } from "@/lib/take";
@@ -43,6 +43,13 @@ function WatchLog({ u }: { u: Unstill }) {
 function Takes({ u }: { u: Unstill }) {
   const input = useRef<HTMLInputElement>(null);
   const idle = u.phase === "idle";
+  // Delete asks twice. The second press has to come within a few seconds.
+  const [arming, setArming] = useState<string | null>(null);
+  useEffect(() => {
+    if (!arming) return;
+    const timer = setTimeout(() => setArming(null), 3500);
+    return () => clearTimeout(timer);
+  }, [arming]);
 
   return (
     <section className="ledger-panel panel-takes" aria-label="Takes">
@@ -60,8 +67,7 @@ function Takes({ u }: { u: Unstill }) {
           const file = e.target.files?.[0];
           e.target.value = "";
           if (!file) return;
-          const take = parseTake(await file.text());
-          if (take) u.importTake(take);
+          u.importTake(parseTake(await file.text()));
         }}
       />
 
@@ -92,8 +98,17 @@ function Takes({ u }: { u: Unstill }) {
                 <button className="btn btn-small" onClick={() => exportTake(t)}>
                   Export
                 </button>
-                <button className="btn btn-small btn-quiet" onClick={() => u.deleteTake(t.id)} disabled={t.id === u.activeTakeId}>
-                  Delete
+                <button
+                  className={`btn btn-small btn-quiet ${arming === t.id ? "btn-armed" : ""}`}
+                  onClick={() => {
+                    if (arming === t.id) {
+                      u.deleteTake(t.id);
+                      setArming(null);
+                    } else setArming(t.id);
+                  }}
+                  disabled={t.id === u.activeTakeId}
+                >
+                  {arming === t.id ? "Press again to delete" : "Delete"}
                 </button>
               </div>
             </li>

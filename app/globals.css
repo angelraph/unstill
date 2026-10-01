@@ -96,3 +96,91 @@ button:disabled {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Logo */
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  line-height: 1;
+  color: inherit;
+}
+
+.logo-mark {
+  display: block;
+  width: 2.2em;
+  height: auto;
+  overflow: visible;
+  flex: none;
+}
+
+.logo-edge {
+  fill: none;
+  stroke: #e9a640;
+  stroke-width: 1.8;
+}
+
+.logo-ring {
+  fill: none;
+  stroke: url(#unstill-ring);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.logo-type {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.55em;
+}
+
+.logo-word {
+  font-family: var(--font-logo), var(--font-serif);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-size: 1em;
+}
+
+.logo-tag {
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.24em;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--amber);
+  white-space: nowrap;
+}
+
+.logo-full .logo-mark {
+  width: 2.6em;
+}
+
+/* Entrance: the still splits into frames, then the world starts to orbit. */
+.logo-animate .logo-frame {
+  opacity: 0;
+  transform: translateX(-10px);
+  animation: logo-frame 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  animation-delay: calc(var(--i) * 110ms + 120ms);
+}
+
+.logo-animate .logo-ring {
+  stroke-dasharray: 340;
+  stroke-dashoffset: 340;
+  animation: logo-ring 1.4s cubic-bezier(0.6, 0, 0.2, 1) 0.5s forwards;
+}
+
+@keyframes logo-frame {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes logo-ring {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.logo:hover .logo-ring-front {
+  stroke-width: 3.6;
+}

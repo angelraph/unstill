@@ -91,14 +91,17 @@ export function Deck({ u }: { u: Unstill }) {
 
       <BeatInput u={u} live={live} />
 
-      <Section title="Queue" hint="Released one per settle window">
+      <Section
+        title="Queue"
+        hint={u.phase === "paused" && u.queue.length ? "Held. Resume to release" : "Released one per settle window"}
+      >
         {u.queue.length === 0 ? (
           <p className="empty">{live ? "Clear. The next directive goes out at the next chunk boundary." : "Directives queue here while the world runs."}</p>
         ) : (
           <ul className="queue">
             {u.queue.map((q, i) => (
               <li key={q.id}>
-                <span className="mono">{i === 0 ? "Next" : `+${i}`}</span>
+                <span className="mono">{i === 0 ? (u.releaseIn ? `In ${u.releaseIn}` : "Next") : `+${i}`}</span>
                 <span>{q.label}</span>
                 <button className="x" onClick={() => u.dropQueued(q.id)} aria-label={`Drop ${q.label}`}>
                   Drop
@@ -116,12 +119,22 @@ export function Deck({ u }: { u: Unstill }) {
   );
 }
 
-function Section({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
+function Section({
+  title,
+  hint,
+  hintTone,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  hintTone?: "pending";
+  children: React.ReactNode;
+}) {
   return (
     <section className="section">
       <header className="section-head">
         <h3>{title}</h3>
-        {hint && <span className="section-hint">{hint}</span>}
+        {hint && <span className={`section-hint ${hintTone === "pending" ? "hint-pending" : ""}`}>{hint}</span>}
       </header>
       {children}
     </section>
@@ -130,23 +143,39 @@ function Section({ title, hint, children }: { title: string; hint?: string; chil
 
 function AxisRow({ axis, u }: { axis: Axis; u: Unstill }) {
   const { label, options } = AXES[axis];
-  const queued = u.queue.some((q) => q.label.startsWith(`${label}:`));
+  const running = u.phase === "live" || u.phase === "paused";
+  // While the world runs, the filled segment is what Orbis is showing. A request waits in outline until it lands.
+  const shown = running ? u.landed[axis] : u.target[axis];
+  const asked = u.target[axis];
+  const position = u.queue.findIndex((q) => q.label.startsWith(`${label}:`));
+  let hint: string | undefined;
+  if (running && asked !== shown) {
+    if (position > 0) hint = `Queued, ${position} ahead`;
+    else if (u.phase === "paused") hint = "Lands after Hold";
+    else if (u.releaseIn) hint = `Lands in ${u.releaseIn} ${u.releaseIn === 1 ? "chunk" : "chunks"}`;
+    else hint = "Landing";
+  }
   return (
-    <Section title={label} hint={queued ? "Queued" : undefined}>
+    <Section title={label} hint={hint} hintTone={hint ? "pending" : undefined}>
       <div className="seg" role="radiogroup" aria-label={label}>
-        {options.map((o) => (
-          <button
-            key={o.value}
-            role="radio"
-            aria-checked={u.target[axis] === o.value}
-            className={u.target[axis] === o.value ? "on" : ""}
-            onClick={() => u.direct(axis, o.value)}
-            disabled={u.phase === "rolling" || Boolean(u.replayTake)}
-          >
-            <span>{o.label}</span>
-            <kbd className="mono">{o.key.toUpperCase()}</kbd>
-          </button>
-        ))}
+        {options.map((o) => {
+          const on = shown === o.value;
+          const pending = running && asked === o.value && !on;
+          return (
+            <button
+              key={o.value}
+              role="radio"
+              aria-checked={on}
+              className={on ? "on" : pending ? "pending" : ""}
+              onClick={() => u.direct(axis, o.value)}
+              disabled={u.phase === "rolling" || Boolean(u.replayTake)}
+              title={pending ? "Asked for. Waiting for the next release." : undefined}
+            >
+              <span>{o.label}</span>
+              <kbd className="mono">{o.key.toUpperCase()}</kbd>
+            </button>
+          );
+        })}
       </div>
     </Section>
   );
@@ -223,6 +252,15 @@ function useShortcuts(u: Unstill) {
       if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || el.isContentEditable)) return;
       const key = e.key.toLowerCase();
       const cur = ref.current;
+      // Space is the transport: Roll when idle, Hold and Resume while running. A focused button keeps its own Space.
+      if (key === " " && !(el && (el.tagName === "BUTTON" || el.tagName === "A"))) {
+        if (e.repeat || cur.busy) return;
+        e.preventDefault();
+        if (cur.phase === "idle" && (cur.watch || cur.photo)) cur.roll();
+        else if (cur.phase === "live") cur.pause();
+        else if (cur.phase === "paused") cur.resume();
+        return;
+      }
       for (const axis of AXIS_ORDER) {
         const hit = AXES[axis].options.find((o) => o.key === key);
         if (hit) {

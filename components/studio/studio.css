@@ -24,9 +24,7 @@
 }
 
 .wordmark {
-  font-family: var(--font-serif);
-  font-size: 22px;
-  letter-spacing: 0.18em;
+  font-size: 17px;
   text-decoration: none;
   color: var(--chalk);
 }
@@ -128,6 +126,8 @@
   grid-area: ledger;
   display: grid;
   grid-template-columns: 1fr 1fr;
+  align-content: start;
+  align-items: start;
   gap: 20px;
   padding: 20px;
   min-width: 0;
@@ -245,6 +245,11 @@
   pointer-events: none;
 }
 
+.chip.chip-held {
+  color: var(--amber-ink);
+  background: var(--amber);
+}
+
 .chip {
   font-size: 10.5px;
   letter-spacing: 0.06em;
@@ -293,10 +298,20 @@
 }
 
 .rail {
+  position: relative;
+  height: 22px;
+  margin-top: 4px;
+}
+
+.rail-cells {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: grid;
-  grid-template-columns: repeat(24, 1fr);
-  gap: 3px;
-  height: 6px;
+  grid-template-columns: repeat(32, 1fr);
+  gap: 2px;
+  height: 8px;
 }
 
 .tick {
@@ -309,8 +324,57 @@
   background: var(--line-2);
 }
 
-.tick.mark {
+.tick.settling {
+  background: repeating-linear-gradient(135deg, transparent 0 2px, rgba(226, 164, 59, 0.45) 2px 3px);
+}
+
+.rail-beat {
+  position: absolute;
+  top: 2px;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 1.5px;
   background: var(--amber);
+  transform: rotate(45deg);
+  animation: beat-in 0.4s ease;
+}
+
+.rail-opening,
+.rail-replay {
+  background: var(--chalk);
+}
+
+.rail-event,
+.rail-line {
+  background: #9fb3cf;
+}
+
+@keyframes beat-in {
+  from {
+    transform: rotate(45deg) scale(0);
+  }
+}
+
+.rail-head {
+  position: absolute;
+  top: 0;
+  bottom: -2px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--tally);
+  transition: left 0.5s linear;
+}
+
+.rail-head::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -3px;
+  width: 8px;
+  height: 5px;
+  background: var(--tally);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
 }
 
 /* Transport */
@@ -401,6 +465,25 @@
 
 .btn-wide {
   width: 100%;
+}
+
+.btn-kbd {
+  font-size: 9.5px;
+  padding: 1px 5px;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  opacity: 0.4;
+}
+
+.btn-armed {
+  color: #f2a7a9;
+  border-color: rgba(229, 72, 77, 0.55);
+}
+
+.btn-glass {
+  background: rgba(14, 13, 11, 0.6);
+  border-color: rgba(236, 230, 217, 0.25);
+  backdrop-filter: blur(6px);
 }
 
 .btn-small {
@@ -506,9 +589,16 @@
   text-align: right;
 }
 
+.section-hint.hint-pending {
+  color: var(--amber);
+  font-family: var(--font-mono), monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+}
+
 .watches {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 6px;
 }
 
@@ -588,6 +678,20 @@
   background: var(--amber);
   color: var(--amber-ink);
   font-weight: 600;
+}
+
+/* Asked for, not yet on screen: an outline that breathes until the release lands it. */
+.seg button.pending {
+  color: var(--amber);
+  box-shadow: inset 0 0 0 1px var(--amber);
+  background: rgba(226, 164, 59, 0.07);
+  animation: waiting 1.6s ease-in-out infinite;
+}
+
+@keyframes waiting {
+  50% {
+    box-shadow: inset 0 0 0 1px rgba(226, 164, 59, 0.35);
+  }
 }
 
 .seg kbd,
@@ -693,6 +797,11 @@
   gap: 6px;
   font-size: 11.5px;
   color: var(--dim);
+}
+
+.field input {
+  flex: none;
+  color: var(--chalk);
 }
 
 .fine {
@@ -877,9 +986,6 @@
   .ledger {
     grid-template-columns: 1fr;
   }
-  .watches {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 /* Phone and small tablet: stage pinned, panels in tabs */
@@ -917,7 +1023,7 @@
   }
 
   .rail {
-    padding: 0 16px;
+    margin: 4px 16px 0;
   }
 
   .transport {
@@ -1011,6 +1117,109 @@
     font-size: 11.5px;
   }
   .seg kbd {
+    display: none;
+  }
+}
+
+/* Desktop: the picture stays in view. Deck and ledger scroll on their own. */
+
+@media (min-width: 861px) and (min-height: 700px) {
+  .studio {
+    height: 100dvh;
+    overflow: hidden;
+  }
+  .studio-grid {
+    min-height: 0;
+  }
+  .stage {
+    max-width: calc(58dvh * 16 / 9);
+    margin: 0 auto;
+  }
+  .deck-col,
+  .ledger {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-2) transparent;
+  }
+  .log {
+    max-height: none;
+  }
+}
+
+/* Poster sits over the animatic, so its gradient only darkens where the type is. */
+
+.animatic + .poster {
+  background: linear-gradient(to top, rgba(14, 13, 11, 0.86), rgba(14, 13, 11, 0.1) 62%, transparent);
+}
+
+.poster-photo {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 14px;
+}
+.poster-photo .poster-sector {
+  margin: 0;
+  padding: 5px 9px;
+  border-radius: 4px;
+  background: rgba(14, 13, 11, 0.66);
+}
+
+button.poster-empty {
+  width: 100%;
+  border: 0;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+}
+button.poster-empty:hover:not(:disabled) .poster-name {
+  color: var(--amber);
+}
+button.poster-empty::after {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 1px dashed var(--line-2);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.dropzone {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  background: rgba(14, 13, 11, 0.78);
+  outline: 2px dashed var(--amber);
+  outline-offset: -14px;
+  font-size: clamp(24px, 3.4vw, 40px);
+  color: var(--amber);
+  pointer-events: none;
+}
+
+@media (max-width: 860px) {
+  .poster-photo .btn-small {
+    min-height: 30px;
+  }
+}
+
+.masthead-link {
+  font-size: 13px;
+  color: var(--chalk-2);
+  text-decoration: none;
+  padding: 6px 4px;
+}
+
+.masthead-link:hover {
+  color: var(--chalk);
+}
+
+@media (max-width: 860px) {
+  .masthead-link {
     display: none;
   }
 }
