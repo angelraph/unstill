@@ -163,12 +163,17 @@ function Masthead({ u }: { u: Unstill }) {
           <dd>{u.phase === "idle" ? "--" : String(u.chunk).padStart(3, "0")}</dd>
         </div>
       </dl>
-      <div className={`tally ${live ? "on" : ""} ${u.phase === "paused" ? "held" : ""}`}>
-        <span className="tally-dot" aria-hidden />
-        <span className="mono">
-          {u.phase === "live" ? "Live" : u.phase === "paused" ? "Held" : u.phase === "rolling" ? "Rolling" : u.connected ? "Ready" : "Standby"}
-        </span>
-      </div>
+      {u.phase === "idle" ? (
+        <button className="tally tally-go" onClick={u.roll} disabled={u.busy || (!u.watch && !u.photo)}>
+          <span className="tally-dot" aria-hidden />
+          <span className="mono">{u.busy ? "Connecting" : "Go live"}</span>
+        </button>
+      ) : (
+        <div className={`tally ${live ? "on" : ""} ${u.phase === "paused" ? "held" : ""}`}>
+          <span className="tally-dot" aria-hidden />
+          <span className="mono">{u.phase === "live" ? "Live" : u.phase === "paused" ? "Held" : "Rolling"}</span>
+        </div>
+      )}
     </header>
   );
 }

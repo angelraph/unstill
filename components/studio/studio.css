@@ -77,6 +77,23 @@
   background: var(--line-2);
 }
 
+.tally-go {
+  background: rgba(229, 72, 77, 0.12);
+  border-color: rgba(229, 72, 77, 0.55);
+  color: var(--chalk);
+  cursor: pointer;
+  font: inherit;
+}
+
+.tally-go .tally-dot {
+  background: var(--tally);
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+.tally-go:hover:not(:disabled) {
+  background: rgba(229, 72, 77, 0.22);
+}
+
 .tally.on {
   color: var(--chalk);
   border-color: rgba(229, 72, 77, 0.5);
