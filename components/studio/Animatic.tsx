@@ -2,15 +2,27 @@
 
 import type { WorldState } from "@/lib/watches";
 
+import "./animatic.css";
+
 /**
  * A cheap rehearsal of the shot before any GPU is spent. Hour, weather, crowd and
  * camera all read on it, so the director can block the take, then Roll for real.
  * It never pretends to be Orbis: the slug in the corner says what it is.
  */
-export function Animatic({ watchId, world, photoUrl }: { watchId: string | null; world: WorldState; photoUrl?: string | null }) {
+export function Animatic({
+  watchId,
+  world,
+  photoUrl,
+  slug = true,
+}: {
+  watchId: string | null;
+  world: WorldState;
+  photoUrl?: string | null;
+  slug?: boolean;
+}) {
   return (
     <div
-      className="animatic"
+      className={`animatic ${slug ? "" : "no-slug"}`}
       data-hour={world.hour}
       data-weather={world.weather}
       data-crowd={world.crowd}

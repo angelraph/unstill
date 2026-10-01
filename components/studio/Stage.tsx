@@ -124,23 +124,49 @@ export function Stage({ u }: { u: Unstill }) {
           </>
         )}
       </div>
-      <ChunkRail chunk={u.chunk} running={running && u.phase !== "rolling"} lastAt={latest?.chunk ?? 0} />
+      <ChunkRail
+        chunk={u.chunk}
+        running={running && u.phase !== "rolling"}
+        beats={u.log.map((l) => ({ chunk: l.chunk, kind: l.kind, label: l.label }))}
+        settleUntil={u.releaseIn ? u.chunk + u.releaseIn : null}
+      />
     </div>
   );
 }
 
-/** One tick per chunk. Ticks since the last directive show the morph settling. */
-function ChunkRail({ chunk, running, lastAt }: { chunk: number; running: boolean; lastAt: number }) {
-  const span = 24;
-  const start = Math.max(0, chunk - span + 1);
+/** A review track: one cell per chunk, a diamond where each beat landed, the playhead on the live chunk. */
+function ChunkRail({
+  chunk,
+  running,
+  beats,
+  settleUntil,
+}: {
+  chunk: number;
+  running: boolean;
+  beats: { chunk: number; kind: string; label: string }[];
+  settleUntil: number | null;
+}) {
+  const span = 32;
+  // Keep a little runway ahead of the playhead so the settle window is visible.
+  const start = running ? Math.max(0, chunk - span + 6) : 0;
+  const at = (c: number) => `${((c - start + 0.5) / span) * 100}%`;
   return (
-    <div className="rail" aria-hidden>
-      {Array.from({ length: span }, (_, i) => {
-        const index = start + i;
-        const past = running && index <= chunk;
-        const mark = running && index === lastAt;
-        return <span key={i} className={`tick ${past ? "past" : ""} ${mark ? "mark" : ""}`} />;
-      })}
+    <div className={`rail ${running ? "rail-live" : ""}`} aria-hidden>
+      <div className="rail-cells">
+        {Array.from({ length: span }, (_, i) => {
+          const index = start + i;
+          const past = running && index <= chunk;
+          const settling = running && settleUntil !== null && index > chunk && index <= settleUntil;
+          return <span key={i} className={`tick ${past ? "past" : ""} ${settling ? "settling" : ""}`} />;
+        })}
+      </div>
+      {running &&
+        beats
+          .filter((b) => b.chunk >= start && b.chunk < start + span)
+          .map((b, i) => (
+            <span key={`${b.chunk}-${i}`} className={`rail-beat rail-${b.kind}`} style={{ left: at(b.chunk) }} title={b.label} />
+          ))}
+      {running && <span className="rail-head" style={{ left: at(chunk) }} />}
     </div>
   );
 }

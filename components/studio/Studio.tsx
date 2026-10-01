@@ -4,6 +4,7 @@ import { ReactorProvider } from "@reactor-team/js-sdk";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { Logo } from "@/components/site/Logo";
 import { Deck } from "@/components/studio/Deck";
 import { Ledger } from "@/components/studio/Ledger";
 import { Stage } from "@/components/studio/Stage";
@@ -96,8 +97,8 @@ function Masthead({ u }: { u: Unstill }) {
   const live = u.phase === "live";
   return (
     <header className="masthead">
-      <Link href="/" className="wordmark" aria-label="UNSTILL, back to the brief">
-        UNSTILL
+      <Link href="/" className="wordmark" aria-label="UNSTILL, back to the home page">
+        <Logo />
       </Link>
       <dl className="slate mono">
         <div>
@@ -117,6 +118,9 @@ function Masthead({ u }: { u: Unstill }) {
           <dd>{u.phase === "idle" ? "--" : String(u.chunk).padStart(3, "0")}</dd>
         </div>
       </dl>
+      <Link href="/docs#controls" className="masthead-link" target="_blank" rel="noopener">
+        Docs
+      </Link>
       <div className={`tally ${live ? "on" : ""} ${u.phase === "paused" ? "held" : ""}`}>
         <span className="tally-dot" aria-hidden />
         <span className="mono">

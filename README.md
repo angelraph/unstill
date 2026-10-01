@@ -31,7 +31,7 @@ cp .env.example .env.local   # then add your Reactor API key
 npm run dev
 ```
 
-Open http://localhost:3000 for the brief and http://localhost:3000/studio for the studio.
+Open http://localhost:3000 for the site and http://localhost:3000/studio for the studio. The site has its own pages for Watches, How it works, Docs and FAQ.
 
 ## Environment
 
@@ -50,7 +50,11 @@ The key never reaches the browser. `app/api/token/route.ts` exchanges it for a o
 ## Project map
 
 ```
-app/page.tsx                 The brief
+app/(site)/page.tsx          Home: hero reel, scroll directed corner, slides
+app/(site)/watches/          The three Watches with playable previews
+app/(site)/how-it-works/     Review timeline, compiler, release, takes
+app/(site)/docs/             The manual
+app/(site)/faq/              Questions
 app/studio/page.tsx          The studio
 app/api/token/route.ts       JWT minting
 hooks/use-unstill.ts         Session engine: roll, direct, queue, cue, takes, replay
@@ -58,7 +62,8 @@ lib/watches.ts               Worlds, directive vocabulary, events, cue sheets
 lib/compiler.ts              Opening and shift prompts
 lib/take.ts                  Take storage, export, import
 lib/image.ts                 16:9 crop
-components/studio/           Stage, deck, transport, log and takes
+components/studio/           Stage, animatic, deck, transport, log and takes
+components/site/             Logo, navigation and the motion pieces
 ```
 
 ## Built with
