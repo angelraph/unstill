@@ -1,6 +1,9 @@
 "use client";
 
 import { ReactorView } from "@reactor-team/js-sdk";
+import { useRef, useState } from "react";
+
+import { Animatic } from "@/components/studio/Animatic";
 
 import type { Unstill } from "@/hooks/use-unstill";
 
@@ -8,10 +11,46 @@ export function Stage({ u }: { u: Unstill }) {
   const running = u.phase !== "idle";
   const latest = u.log[0];
   const showPicture = running && u.connected;
+  const picker = useRef<HTMLInputElement>(null);
+  const [dragging, setDragging] = useState(false);
+  const canDrop = u.phase === "idle" && !u.busy;
+
+  const takeFile = (file: File | undefined | null) => {
+    if (file && file.type.startsWith("image/")) void u.choosePhoto(file);
+  };
 
   return (
     <div className="stage">
-      <div className="frame">
+      <div
+        className={`frame ${dragging ? "dropping" : ""}`}
+        onDragOver={(e) => {
+          if (!canDrop || !Array.from(e.dataTransfer.types).includes("Files")) return;
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "copy";
+          setDragging(true);
+        }}
+        onDragLeave={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setDragging(false);
+        }}
+        onDrop={(e) => {
+          if (!canDrop) return;
+          e.preventDefault();
+          setDragging(false);
+          takeFile(e.dataTransfer.files?.[0]);
+        }}
+      >
+        <input
+          ref={picker}
+          type="file"
+          accept="image/*"
+          className="sr-only"
+          tabIndex={-1}
+          onChange={(e) => {
+            takeFile(e.target.files?.[0]);
+            e.target.value = "";
+          }}
+        />
+
         {showPicture ? (
           <ReactorView
             track="main_video"
@@ -21,19 +60,38 @@ export function Stage({ u }: { u: Unstill }) {
             className="picture"
           />
         ) : u.watch ? (
-          <div className="poster">
-            <p className="poster-sector mono">{u.watch.sector}</p>
-            <h2 className="poster-name serif">{u.watch.name}</h2>
-            <p className="poster-line">{u.watch.logline}</p>
-          </div>
+          <>
+            <Animatic watchId={u.watch.id} world={u.target} />
+            <div className="poster">
+              <p className="poster-sector mono">{u.watch.sector}</p>
+              <h2 className="poster-name serif">{u.watch.name}</h2>
+              <p className="poster-line">{u.watch.logline}</p>
+            </div>
+          </>
         ) : u.photoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={u.photoUrl} alt="Your photograph, cropped to the frame Orbis will open on" className="picture still" />
+          <>
+            <Animatic watchId={null} world={u.target} photoUrl={u.photoUrl} />
+            <div className="poster poster-photo">
+              <p className="poster-sector mono">Your photograph · first frame</p>
+              <button className="btn btn-small btn-glass" onClick={() => picker.current?.click()} disabled={!canDrop}>
+                Replace
+              </button>
+            </div>
+          </>
         ) : (
-          <div className="poster">
+          <button className="poster poster-empty" onClick={() => picker.current?.click()} disabled={!canDrop}>
             <p className="poster-sector mono">Your photograph</p>
             <h2 className="poster-name serif">Bring a still.</h2>
-            <p className="poster-line">Any place you have stood. Orbis opens on that exact frame, then you direct it.</p>
+            <p className="poster-line">
+              Drop an image anywhere on this frame, or click to choose one. Orbis opens on that exact frame, then you
+              direct it.
+            </p>
+          </button>
+        )}
+
+        {dragging && (
+          <div className="dropzone">
+            <span className="serif">Drop to set the first frame</span>
           </div>
         )}
 
@@ -51,7 +109,11 @@ export function Stage({ u }: { u: Unstill }) {
                 {u.anchored ? "Anchored to photo" : "Text opening"}
                 {u.chunkSeconds ? ` · ${u.chunkSeconds.toFixed(1)}s chunks` : ""}
               </span>
-              {u.queue.length > 0 && <span className="chip mono">{u.queue.length} queued</span>}
+              {u.phase === "paused" ? (
+                <span className="chip chip-held mono">Held</span>
+              ) : (
+                u.queue.length > 0 && <span className="chip mono">{u.queue.length} queued</span>
+              )}
             </div>
             {latest && (
               <div className="caption" key={latest.id}>

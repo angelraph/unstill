@@ -82,6 +82,9 @@ export function useUnstill(getJwt: () => Promise<string>) {
   const [cueIndex, setCueIndex] = useState<number | null>(null);
   const [replayTake, setReplayTake] = useState<Take | null>(null);
   const [lastPrompt, setLastPrompt] = useState("");
+  // What Orbis is actually showing, as opposed to what the director asked for.
+  const [landed, setLanded] = useState<WorldState>(WATCHES[0].initial);
+  const [lastSendChunk, setLastSendChunk] = useState(-99);
 
   // Engine refs, read inside the message handler without stale closures.
   const phaseRef = useRef<Phase>("idle");
@@ -182,6 +185,7 @@ export function useUnstill(getJwt: () => Promise<string>) {
       sendingRef.current = true;
       const at = chunkRef.current;
       lastSendChunkRef.current = at;
+      setLastSendChunk(at);
       try {
         const raw = await sendCommand("set_prompt", { prompt });
         const reply = raw ? unwrapOrbisMessage(raw) : null;
@@ -258,7 +262,13 @@ export function useUnstill(getJwt: () => Promise<string>) {
       if (liveRef.current[item.axis] === item.value) return;
       const prompt = compileShift(item.axis, item.value, nouns);
       const ok = await sendBeat(prompt, labelFor(item), "axis");
-      if (ok) liveRef.current = { ...liveRef.current, [item.axis]: item.value };
+      if (ok) {
+        liveRef.current = { ...liveRef.current, [item.axis]: item.value };
+        setLanded(liveRef.current);
+      } else {
+        // A rejected change never lands; put the control back on what is showing.
+        setTarget((t) => ({ ...t, [item.axis]: liveRef.current[item.axis] }));
+      }
     } else {
       await sendBeat(item.prompt, item.label, item.kind);
     }
@@ -295,6 +305,7 @@ export function useUnstill(getJwt: () => Promise<string>) {
           chunkRef.current = 0;
           setChunk(0);
           lastSendChunkRef.current = 0;
+          setLastSendChunk(0);
           setPhase("live");
           break;
         case "chunk_complete":
@@ -395,6 +406,7 @@ export function useUnstill(getJwt: () => Promise<string>) {
         await ready.promise;
 
         liveRef.current = { ...target };
+        setLanded(liveRef.current);
         queueRef.current = [];
         syncQueueView();
         setLastPrompt(runPrompt);
@@ -440,6 +452,7 @@ export function useUnstill(getJwt: () => Promise<string>) {
       const next = w ? w.initial : DEFAULT_WORLD;
       setTarget(next);
       liveRef.current = next;
+      setLanded(next);
     },
     [],
   );
@@ -529,6 +542,7 @@ export function useUnstill(getJwt: () => Promise<string>) {
         if (take.watchId !== PHOTO_WATCH_ID && watchById(take.watchId)) {
           setWatchId(take.watchId);
           setTarget(watchById(take.watchId)!.initial);
+          setLanded(watchById(take.watchId)!.initial);
         }
         setSeed(take.seed);
         replayRef.current = { take, index: 0 };
@@ -543,7 +557,11 @@ export function useUnstill(getJwt: () => Promise<string>) {
     [guard, roll],
   );
 
-  const importTake = useCallback((take: Take) => {
+  const importTake = useCallback((take: Take | null) => {
+    if (!take) {
+      setError("That file is not an UNSTILL take. It needs a seed, an opening and a list of beats.");
+      return;
+    }
     const others = takesRef.current.filter((t) => t.id !== take.id);
     const next = [take, ...others];
     takesRef.current = next;
@@ -580,6 +598,8 @@ export function useUnstill(getJwt: () => Promise<string>) {
     watch,
     watchId,
     target,
+    landed,
+    releaseIn: phase === "live" ? Math.max(0, SETTLE_CHUNKS - (chunk - lastSendChunk)) : null,
     opening,
     lastPrompt,
     queue: queueView,

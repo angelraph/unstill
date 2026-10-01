@@ -23,10 +23,11 @@ export function Transport({ u }: { u: Unstill }) {
             className="btn btn-roll"
             onClick={u.roll}
             disabled={u.busy || needsPhoto || u.status === "connecting"}
-            title={needsPhoto ? "Add a photograph first" : "Start the world"}
+            title={needsPhoto ? "Add a photograph first" : "Start the world (Space)"}
           >
             <span className="roll-dot" aria-hidden />
             {u.busy || u.status === "connecting" ? "Connecting" : "Roll"}
+            <kbd className="mono btn-kbd">Space</kbd>
           </button>
         ) : u.phase === "rolling" ? (
           <button className="btn btn-roll" disabled>
@@ -36,12 +37,14 @@ export function Transport({ u }: { u: Unstill }) {
         ) : (
           <>
             {u.phase === "paused" ? (
-              <button className="btn" onClick={u.resume} disabled={u.busy}>
+              <button className="btn" onClick={u.resume} disabled={u.busy} title="Resume (Space)">
                 Resume
+                <kbd className="mono btn-kbd">Space</kbd>
               </button>
             ) : (
-              <button className="btn" onClick={u.pause} disabled={u.busy}>
+              <button className="btn" onClick={u.pause} disabled={u.busy} title="Hold the picture (Space)">
                 Hold
+                <kbd className="mono btn-kbd">Space</kbd>
               </button>
             )}
             <button className="btn btn-cut" onClick={u.cut} disabled={u.busy}>
