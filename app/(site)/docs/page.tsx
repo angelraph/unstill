@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 const NAV = [
   { group: "Start", items: [["quickstart", "Quickstart"], ["studio", "Studio tour"], ["shortcuts", "Keyboard shortcuts"]] },
   { group: "Direct", items: [["directives", "Directives"], ["voice", "Direct by voice"], ["events", "Events and cue sheets"], ["queue", "The queue"]] },
-  { group: "Keep", items: [["takes", "Takes and replay"], ["branch", "Branching: what if"], ["share", "Share a take"], ["photo", "Your photograph"], ["record", "Recording"]] },
+  { group: "Keep", items: [["takes", "Takes and replay"], ["branch", "Branching: what if"], ["share", "Share a take"], ["photo", "Your photograph"], ["credits", "Credit guard"], ["record", "Recording"]] },
   { group: "Build", items: [["self-host", "Self hosting"], ["troubleshooting", "Troubleshooting"]] },
 ];
 
@@ -333,6 +333,21 @@ export default function Docs() {
             <li>Roll. The badge on the stage reads Anchored to photo when Orbis confirms the image.</li>
           </ol>
           <p>Landscape images close to photoreal give the most faithful openings.</p>
+        </section>
+
+        <section id="credits">
+          <h2>Credit guard</h2>
+          <p>
+            Orbis bills while a session runs, so the studio only keeps one alive while someone is directing it. Any click,
+            key, voice command, cue sheet or replay counts as direction.
+          </p>
+          <ul>
+            <li>Two minutes without direction: a warning with a Keep going button, then the run is cut and the GPU released twenty seconds later.</li>
+            <li>Every run is capped at ten minutes.</li>
+            <li>A GPU left connected after a Cut is released after a minute.</li>
+            <li>Closing or leaving the tab ends the session.</li>
+          </ul>
+          <p>The take is always saved first, so nothing you directed is lost.</p>
         </section>
 
         <section id="record">

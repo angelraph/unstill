@@ -113,6 +113,22 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="band" id="walkthrough">
+        <div className="wrap">
+          <p className="eyebrow-blue mono">The walkthrough</p>
+          <Reveal as="h2" className="h2 two-tone">
+            Every feature. <span>Filmed live.</span>
+          </Reveal>
+          <p className="lede">
+            Under six minutes through the whole studio on real Orbis sessions: keys, events, voice, hold and resume, cue sheets,
+            Save HD video, takes, a branch played side by side with its original, and a photograph brought to life.
+          </p>
+          <div className="live-film">
+            <video src="/walkthrough.mp4" poster="/stills/walkthrough-poster.jpg" controls preload="none" playsInline />
+          </div>
+        </div>
+      </section>
+
       <section className="band">
         <div className="wrap">
           <p className="eyebrow-blue mono">Unedited. Live.</p>

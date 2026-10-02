@@ -9,6 +9,7 @@ import { Deck } from "@/components/studio/Deck";
 import { Ledger } from "@/components/studio/Ledger";
 import { Stage } from "@/components/studio/Stage";
 import { Transport } from "@/components/studio/Transport";
+import { useCreditGuard } from "@/hooks/use-credit-guard";
 import { useUnstill, type Unstill } from "@/hooks/use-unstill";
 import { useServerRecording } from "@/hooks/use-server-recording";
 import { useVoice } from "@/hooks/use-voice";
@@ -59,6 +60,8 @@ function StudioBody({ getJwt, onDisconnect }: { getJwt: () => Promise<string>; o
   // Full quality MP4 of the session, recorded on Reactor's side.
   const hd = useServerRecording(getJwt);
   const { save: saveHd } = hd;
+  // Credits are only spent while someone is directing.
+  const guard = useCreditGuard(u, `${u.log.length}|${u.queue.length}|${voice.heard?.id ?? 0}|${hd.state}`);
   // Test entry point (only with ?voicetest=1).
   useEffect(() => {
     if (!new URLSearchParams(window.location.search).has("voicetest")) return;
@@ -121,6 +124,20 @@ function StudioBody({ getJwt, onDisconnect }: { getJwt: () => Promise<string>; o
         <section className="stage-col" aria-label="Live picture">
           <Stage u={u} voice={voice} />
           <Transport u={u} voice={voice} hd={hd} />
+          {guard.warning && (
+            <div className="banner banner-warn" role="alert">
+              <span>
+                {guard.warning.kind === "idle"
+                  ? `No direction for a while. Cutting and releasing the GPU in ${guard.warning.seconds} s to save credits.`
+                  : `This run ends in ${guard.warning.seconds} s. Runs are capped at ten minutes to save credits.`}
+              </span>
+              {guard.warning.kind === "idle" && (
+                <button className="banner-close" onClick={guard.keepGoing}>
+                  Keep going
+                </button>
+              )}
+            </div>
+          )}
           {hd.state === "error" && (
             <div className="banner banner-error" role="alert">
               <span>The HD video could not be saved: {hd.error}</span>

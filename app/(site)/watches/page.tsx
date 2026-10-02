@@ -28,6 +28,13 @@ const USE: Record<string, { tag: string; lead: string; why: string[] }> = {
   },
 };
 
+const CLIP: Record<string, string> = {
+  corner: "dusk turns to night on the same street",
+  aisle: "a red drop lands on the plinth",
+  bay: "a box falls in the lane",
+  photo: "a photograph of a lake, now moving",
+};
+
 export default function WatchesPage() {
   const items = [
     ...WATCHES.map((w) => ({ id: w.id, name: w.name, sector: w.sector, opening: compileOpening(w, w.initial) })),
@@ -59,12 +66,18 @@ export default function WatchesPage() {
               </Link>
             </div>
             <div>
-              {w.id === "corner" && (
-                <div className="wx-media">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/stills/corner-dusk.jpg" alt="Real Orbis frame of The Corner at dusk" />
-                </div>
-              )}
+              <div className="wx-media">
+                <video
+                  src={`/clips/${w.id}.mp4`}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  aria-label={`${w.name}, recorded live on Orbis: ${CLIP[w.id]}`}
+                />
+                <p className="wx-media-cap mono">Recorded live on Orbis · {CLIP[w.id]}</p>
+              </div>
               <div className="panel">
                 <h3>Opening prompt</h3>
                 <p className="mono">{compileOpening(w, w.initial)}</p>
@@ -130,12 +143,16 @@ export default function WatchesPage() {
             </Link>
           </div>
           <div>
+            <div className="wx-media">
+              <video src="/clips/photo.mp4" autoPlay muted loop playsInline preload="metadata" aria-label={`Your photograph, recorded live on Orbis: ${CLIP.photo}`} />
+              <p className="wx-media-cap mono">Recorded live on Orbis · {CLIP.photo}</p>
+            </div>
             <div className="panel">
               <h3>What happens to it</h3>
               <ol className="steps-list">
                 <li>Cropped to 16:9 in your browser so nothing is squashed</li>
                 <li>Uploaded to the Orbis session and set as the first frame</li>
-                <li>Your one line caption becomes the opening prompt</li>
+                <li>Your one line description holds Orbis to that place after the first frame</li>
                 <li>Roll, then direct hour, weather, crowd and camera</li>
               </ol>
             </div>

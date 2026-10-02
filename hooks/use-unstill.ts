@@ -655,6 +655,20 @@ export function useUnstill(getJwt: () => Promise<string>) {
         endRun("Cut. The take is saved below.");
         setSeed(newSeed());
       }),
+    /** Credit guard: end any run, keep its take, and give the GPU back. */
+    release: (reason: string) =>
+      guard(async () => {
+        if (phaseRef.current !== "idle") {
+          try {
+            await sendCommand("reset", {});
+          } catch {
+            // The session is closing either way.
+          }
+          setSeed(newSeed());
+        }
+        endRun(reason);
+        await disconnect();
+      }),
     chooseWatch,
     choosePhoto,
     setCaption,

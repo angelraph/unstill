@@ -1695,11 +1695,22 @@
   margin-bottom: 22px;
 }
 
-.wx-media img {
+.wx-media img,
+.wx-media video {
   display: block;
   width: 100%;
-  aspect-ratio: 2.39 / 1;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
+  background: #000;
+}
+
+.wx-media-cap {
+  margin: 0;
+  padding: 10px 14px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--dim, #9a968e);
+  border-top: 1px solid var(--line-2);
 }
 
 .panel {

@@ -9,6 +9,7 @@ UNSTILL is a live direction deck for places, built on Visko Orbis. Lock a locati
 | Live app | https://unstill-pied.vercel.app |
 | Studio | https://unstill-pied.vercel.app/studio |
 | Replay a live take | https://unstill-pied.vercel.app/studio#take=featured |
+| Full walkthrough, every feature filmed live (5:49) | https://unstill-pied.vercel.app/walkthrough.mp4 |
 | Demo film | https://unstill-pied.vercel.app/demo.mp4 |
 | Unedited live take | https://unstill-pied.vercel.app/live-take.mp4 |
 
@@ -61,6 +62,7 @@ Visko describes Live Models through six pillars. This is where each one shows up
 | Save HD video | Downloads the session as a 1080p, 30 fps MP4 with the stream's own sound, recorded on Reactor's servers (`requestRecording` and `downloadClipAsFile`), so the viewer's machine does no encoding |
 | Record | Saves the live picture to a .webm file in the browser |
 | Go live | One click from the tally or the picture starts a session. Sessions start only on demand and end with Cut or Release GPU, so credits are never spent by an idle page |
+| Credit guard | A run with nobody directing it is cut after two minutes, with a twenty second warning and a Keep going button. Runs are capped at ten minutes, a GPU left connected after a Cut is released after a minute, and closing the tab ends the session. Takes are always kept |
 | Deep links | `/studio?watch=aisle` opens a Watch, `/studio#take=...` opens a shared take |
 | Site | Home, Watches, How it works, Docs and FAQ, each a standalone page |
 

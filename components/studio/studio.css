@@ -630,6 +630,11 @@
   color: #f4c9ca;
 }
 
+.banner-warn {
+  border-left-color: var(--amber);
+  color: #f6dfb8;
+}
+
 .banner-close {
   border: 0;
   background: none;
