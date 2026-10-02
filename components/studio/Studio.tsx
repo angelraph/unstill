@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactorProvider } from "@reactor-team/js-sdk";
+import { downloadClipAsFile, ReactorProvider, useReactor } from "@reactor-team/js-sdk";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -54,6 +54,19 @@ function StudioBody({ getJwt, onDisconnect }: { getJwt: () => Promise<string>; o
   const voice = useVoice(u);
   const [tab, setTab] = useState<Tab>("direct");
   const [thumbs, setThumbs] = useState<Record<string, string>>({});
+
+  // Test entry point (only with ?voicetest=1): server side recording of the session, as an MP4.
+  const requestRecording = useReactor((s) => s.requestRecording);
+  useEffect(() => {
+    if (!new URLSearchParams(window.location.search).has("voicetest")) return;
+    const w = window as unknown as { __unstillRecording?: () => Promise<string> };
+    w.__unstillRecording = async () => {
+      const clip = await requestRecording();
+      const blob = await downloadClipAsFile(clip, null);
+      return URL.createObjectURL(blob);
+    };
+    return () => { delete w.__unstillRecording; };
+  }, [requestRecording]);
 
   // A fresh session needs a fresh token.
   useEffect(() => {
