@@ -20,7 +20,8 @@ describe("opening prompts", () => {
 
   it("photo opening uses the caption and the camera", () => {
     const p = compilePhotoOpening("A quiet harbor at low tide", WATCHES[0].initial);
-    expect(p.startsWith("A quiet harbor at low tide.")).toBe(true);
+    expect(p.startsWith("A quiet harbor at low tide, exactly as in the first frame.")).toBe(true);
+    expect(p).not.toMatch(NEGATION);
     expect(p).toContain(optionFor("camera", WATCHES[0].initial.camera).state(WATCHES[0].nouns));
   });
 });

@@ -31,13 +31,15 @@ export function compileOpening(watch: Watch, state: WorldState): string {
   return `${shot} ${world} ${capitalize(conditions)}. Photorealistic.`;
 }
 
-/** Opening for a user photograph: the image pins the first frame, the text adds motion. */
+/**
+ * Opening for a user photograph: the image pins the first frame, the text holds Orbis to it.
+ * Without a description Orbis anchors frame one, then drifts to a place of its own within a
+ * chunk or two, so the caption names what is in the photo and the prompt asks for continuity.
+ */
 export function compilePhotoOpening(caption: string, state: WorldState): string {
   const camera = optionFor("camera", state.camera).state(PHOTO_NOUNS);
-  const subject = caption.trim()
-    ? `${trimPeriod(caption.trim())}.`
-    : "The photographed scene.";
-  return `${subject} The scene comes alive with natural motion, ${camera}. Photorealistic.`;
+  const subject = caption.trim() ? trimPeriod(caption.trim()) : "The place in the photograph";
+  return `${subject}, exactly as in the first frame. The same place continues with gentle natural motion, ${camera}. Photorealistic.`;
 }
 
 export function compileShift(axis: Axis, value: string, nouns: WatchNouns): string {

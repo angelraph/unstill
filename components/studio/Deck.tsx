@@ -183,7 +183,7 @@ function PhotoInput({ u, disabled }: { u: Unstill; disabled: boolean }) {
         {u.photo ? "Replace photograph" : "Choose a photograph"}
       </button>
       <label className="field">
-        <span>What is in it</span>
+        <span>What is in it (needed, Orbis holds to these words)</span>
         <input
           type="text"
           placeholder="A quiet harbor with fishing boats at low tide"

@@ -198,7 +198,7 @@ function Masthead({ u }: { u: Unstill }) {
         </div>
       </dl>
       {u.phase === "idle" ? (
-        <button className="tally tally-go" onClick={u.roll} disabled={u.busy || (!u.watch && !u.photo)}>
+        <button className="tally tally-go" onClick={u.roll} disabled={u.busy || !u.ready}>
           <span className="tally-dot" aria-hidden />
           <span className="mono">{u.busy ? "Connecting" : "Go live"}</span>
         </button>

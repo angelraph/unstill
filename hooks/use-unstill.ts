@@ -378,6 +378,9 @@ export function useUnstill(getJwt: () => Promise<string>) {
       if (watchId === PHOTO_WATCH_ID && !runImage && !opts?.take) {
         throw new Error("Add a photograph first.");
       }
+      if (watchId === PHOTO_WATCH_ID && runImage && !opts?.take && caption.trim().length < 3) {
+        throw new Error("Say what is in the photograph first, in a few words. Orbis holds to it.");
+      }
 
       if (status !== "ready") await connect(await getJwt());
       setPhase("rolling");
@@ -443,7 +446,7 @@ export function useUnstill(getJwt: () => Promise<string>) {
         throw caught;
       }
     },
-    [opening, seed, watchId, photo, status, connect, getJwt, setPhase, uploadFile, sendCommand, resolution, target, syncQueueView, pushLog, watch, persistTake],
+    [opening, seed, watchId, photo, caption, status, connect, getJwt, setPhase, uploadFile, sendCommand, resolution, target, syncQueueView, pushLog, watch, persistTake],
   );
 
   // Public actions
@@ -614,6 +617,8 @@ export function useUnstill(getJwt: () => Promise<string>) {
     photo,
     photoUrl,
     caption,
+    /** A photo world needs the photo and a few words on what is in it. */
+    ready: watchId !== PHOTO_WATCH_ID || (Boolean(photo) && caption.trim().length > 2),
     seed,
     // takes
     takes,

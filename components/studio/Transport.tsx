@@ -23,7 +23,7 @@ export function Transport({
   const rec = useRecorder(u.tracks, name);
   const idle = u.phase === "idle";
   const running = u.phase === "live" || u.phase === "paused";
-  const needsPhoto = !u.watch && !u.photo;
+  const needsPhoto = !u.ready;
 
   return (
     <div className="transport">
@@ -33,7 +33,7 @@ export function Transport({
             className="btn btn-roll"
             onClick={u.roll}
             disabled={u.busy || needsPhoto || u.status === "connecting"}
-            title={needsPhoto ? "Add a photograph first" : "Start the world"}
+            title={needsPhoto ? "Add a photograph and say what is in it" : "Start the world"}
           >
             <span className="roll-dot" aria-hidden />
             {u.busy || u.status === "connecting" ? "Connecting" : "Roll"}
