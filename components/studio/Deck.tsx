@@ -6,6 +6,8 @@ import type { Unstill } from "@/hooks/use-unstill";
 import { AXES, AXIS_ORDER, PHOTO_WATCH_ID, WATCHES, optionFor, type Axis } from "@/lib/watches";
 
 const EVENT_KEYS = ["5", "6", "7", "8"];
+const SHORT: Record<string, string> = { corner: "Street", aisle: "Store", bay: "Warehouse" };
+const PHOTO_LINE = "Upload any photograph. It becomes the first frame, then the world starts moving.";
 
 export function Deck({ u }: { u: Unstill }) {
   const idle = u.phase === "idle";
@@ -26,7 +28,7 @@ export function Deck({ u }: { u: Unstill }) {
               disabled={!idle}
             >
               <span className="watch-name serif">{w.name.replace("The ", "")}</span>
-              <span className="watch-sector mono">{w.sector}</span>
+              <span className="watch-sector mono">{SHORT[w.id] ?? w.sector}</span>
             </button>
           ))}
           <button
@@ -37,9 +39,10 @@ export function Deck({ u }: { u: Unstill }) {
             disabled={!idle}
           >
             <span className="watch-name serif">Photo</span>
-            <span className="watch-sector mono">Your own still</span>
+            <span className="watch-sector mono">Upload</span>
           </button>
         </div>
+        <WatchAbout watchId={u.watchId} />
         {u.watchId === PHOTO_WATCH_ID && <PhotoInput u={u} disabled={!idle} />}
       </Section>
 
@@ -113,6 +116,16 @@ export function Deck({ u }: { u: Unstill }) {
         <p className="inspector mono">{idle ? u.opening : u.lastPrompt}</p>
       </Section>
     </div>
+  );
+}
+
+function WatchAbout({ watchId }: { watchId: string }) {
+  const w = WATCHES.find((x) => x.id === watchId);
+  return (
+    <p className="watch-about">
+      {w ? w.logline : PHOTO_LINE}
+      <span className="mono">{w ? `For ${w.sector.toLowerCase()}` : "Your own place"}</span>
+    </p>
   );
 }
 

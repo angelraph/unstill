@@ -712,6 +712,22 @@
   background: rgba(226, 164, 59, 0.08);
 }
 
+.watch-about {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--dim);
+}
+
+.watch-about .mono {
+  display: block;
+  margin-top: 5px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
 .watch.on .watch-sector {
   color: var(--amber);
 }
