@@ -70,6 +70,16 @@ export function Stage({ u, voice }: { u: Unstill; voice: ReturnType<typeof useVo
           </>
         )}
 
+        {u.phase === "paused" && (
+          <div className="held">
+            <span className="held-title mono">Held</span>
+            <span className="held-line">The world is paused on this chunk. Say “resume” or press Resume to continue.</span>
+            <button className="poster-roll" onClick={u.resume} disabled={u.busy}>
+              Resume
+            </button>
+          </div>
+        )}
+
         {voice.listening && (
           <div className="voice-caption" key={heard?.id ?? "live"}>
             <span className="voice-dot" aria-hidden />

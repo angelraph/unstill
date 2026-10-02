@@ -31,6 +31,22 @@ describe("voice direction", () => {
     expect(labels("make it clear")).toEqual(["Weather: Clear"]);
   });
 
+  it("never pauses or cuts by accident inside a sentence", () => {
+    expect(labels("hold on, make it rain")).toEqual(["Weather: Rain"]);
+    expect(labels("cut to night")).toEqual(["Hour: Night"]);
+    expect(labels("I want to pause and think")).toEqual([]);
+    expect(labels("let me take an action shot of the cab")).toEqual(["Cab stops"]);
+  });
+
+  it("pauses, cuts and rolls on deliberate calls", () => {
+    expect(labels("hold")).toEqual(["Hold"]);
+    expect(labels("hold the shot")).toEqual(["Hold"]);
+    expect(labels("and cut")).toEqual(["Cut"]);
+    expect(labels("that's a wrap")).toEqual(["Cut"]);
+    expect(labels("okay action")).toEqual(["Roll"]);
+    expect(labels("resume")).toEqual(["Resume"]);
+  });
+
   it("ignores chatter", () => {
     expect(labels("what do you think of this shot")).toEqual([]);
   });

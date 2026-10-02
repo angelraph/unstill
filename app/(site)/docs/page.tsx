@@ -229,9 +229,23 @@ export default function Docs() {
                   <td>Plays the Watch cue sheet</td>
                 </tr>
                 <tr>
-                  <td>“Hold” · “Resume” · “Cut”</td>
-                  <td>Transport</td>
+                  <td>“Hold the shot” · “Resume”</td>
+                  <td>Pause and continue the world</td>
                 </tr>
+                <tr>
+                  <td>“And cut” · “That’s a wrap”</td>
+                  <td>End the take</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="callout">
+            Calls that stop or start a session are deliberate. “Action”, “cut” and “hold” only count when said on their own,
+            the way they are called on set, so “hold on” or “cut to night” never pauses or ends a take.
+          </div>
+          <div className="table-wrap" style={{ display: "none" }}>
+            <table className="table">
+              <tbody>
               </tbody>
             </table>
           </div>

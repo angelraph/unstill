@@ -30,12 +30,21 @@ const AXIS_RULES: Rule[] = [
   { words: ["overhead", "top down", "top shot", "crane up", "birds eye", "bird's eye"], action: { kind: "axis", axis: "camera", value: "overhead", label: "Camera: Overhead" } },
 ];
 
+// Transport words that stop or start a session must be deliberate. Bare "hold" or "cut" inside a
+// sentence ("hold on", "cut to night") is ignored; see SHORT_ONLY below.
 const TRANSPORT_RULES: Rule[] = [
-  { words: ["action", "roll it", "roll", "go live"], action: { kind: "transport", action: "roll", label: "Roll" } },
-  { words: ["cut", "that's a wrap", "wrap it"], action: { kind: "transport", action: "cut", label: "Cut" } },
-  { words: ["hold", "pause", "freeze"], action: { kind: "transport", action: "hold", label: "Hold" } },
-  { words: ["resume", "continue", "keep rolling"], action: { kind: "transport", action: "resume", label: "Resume" } },
+  { words: ["roll it", "go live", "start rolling"], action: { kind: "transport", action: "roll", label: "Roll" } },
+  { words: ["that's a wrap", "wrap it up", "end the take", "stop the take"], action: { kind: "transport", action: "cut", label: "Cut" } },
+  { words: ["hold the shot", "hold the world", "pause the world", "pause the shot", "freeze the frame", "freeze the world"], action: { kind: "transport", action: "hold", label: "Hold" } },
+  { words: ["resume", "keep rolling", "unpause", "unfreeze"], action: { kind: "transport", action: "resume", label: "Resume" } },
   { words: ["run the cue", "cue sheet", "run cue", "play the cue"], action: { kind: "transport", action: "cue", label: "Run cue sheet" } },
+];
+
+// One word calls that only count when they are the whole phrase, the way they are called on set.
+const SHORT_ONLY: { words: string[]; action: VoiceAction }[] = [
+  { words: ["action", "roll", "rolling"], action: { kind: "transport", action: "roll", label: "Roll" } },
+  { words: ["cut", "and cut", "cut cut", "okay cut", "ok cut"], action: { kind: "transport", action: "cut", label: "Cut" } },
+  { words: ["hold", "pause", "freeze"], action: { kind: "transport", action: "hold", label: "Hold" } },
 ];
 
 // Extra spoken words for each Watch event, on top of the words in its label.
@@ -73,6 +82,10 @@ function hits(phrase: string, words: string[]) {
  */
 export function parseVoice(text: string, watch: Watch | null): VoiceAction[] {
   const phrase = normalize(text);
+  const bare = phrase.trim().replace(/^(okay|ok|and|alright|right) /, "").replace(/ (please|now)$/, "");
+  for (const s of SHORT_ONLY) {
+    if (s.words.includes(bare) || s.words.includes(phrase.trim())) return [s.action];
+  }
   const found: { at: number; action: VoiceAction }[] = [];
   const seen = new Set<string>();
   const add = (at: number, action: VoiceAction) => {
