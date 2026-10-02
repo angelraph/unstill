@@ -640,6 +640,8 @@ export function useUnstill(getJwt: () => Promise<string>) {
           resumeWantedRef.current = true;
           return;
         }
+        // Already running: nothing to resume, so stay quiet instead of surfacing "Not paused".
+        if (phaseRef.current !== "paused") return;
         await sendCommand("resume", {});
       }),
     cut: () =>
