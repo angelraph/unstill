@@ -48,7 +48,7 @@ Visko describes Live Models through six pillars. This is where each one shows up
 | Feature | What it does |
 | --- | --- |
 | Watches | Three locked worlds: The Corner (film and media), The Aisle (retail), The Bay (robotics and training) |
-| Your photograph | Cropped to 16:9 in the browser, uploaded, and set as the first frame with `set_image` |
+| Your photograph | Cropped to 16:9 in the browser, uploaded, and set as the first frame with `set_image`. A one line description is required: it holds Orbis to the photographed place after the first frame |
 | Direction deck | Hour, weather, occupancy and camera, four event pads per Watch, keyboard shortcuts, and a free beat line |
 | Direct by voice | Say "action", "rain, then night", "have the taxi pull up", "cut". Parsed in order and released on the beat |
 | Continuity compiler | The opening builds the world once. Every prompt after it names one visible change, following the Orbis prompt guide |

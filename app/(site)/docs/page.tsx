@@ -326,7 +326,10 @@ export default function Docs() {
           <ol>
             <li>Select Photo in the Watch picker and choose an image.</li>
             <li>It is cropped to 16:9 in your browser. Orbis squashes other ratios, so this keeps proportions true.</li>
-            <li>Describe what is in it in one line. That becomes the opening prompt.</li>
+            <li>
+              Describe what is in it in one line. This is required: the photograph pins the first frame, and these words
+              keep Orbis on that place afterwards. Without them Orbis drifts to a place of its own within a chunk or two.
+            </li>
             <li>Roll. The badge on the stage reads Anchored to photo when Orbis confirms the image.</li>
           </ol>
           <p>Landscape images close to photoreal give the most faithful openings.</p>
