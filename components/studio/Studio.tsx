@@ -1,6 +1,6 @@
 "use client";
 
-import { downloadClipAsFile, ReactorProvider, useReactor } from "@reactor-team/js-sdk";
+import { ReactorProvider } from "@reactor-team/js-sdk";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -10,6 +10,7 @@ import { Ledger } from "@/components/studio/Ledger";
 import { Stage } from "@/components/studio/Stage";
 import { Transport } from "@/components/studio/Transport";
 import { useUnstill, type Unstill } from "@/hooks/use-unstill";
+import { useServerRecording } from "@/hooks/use-server-recording";
 import { useVoice } from "@/hooks/use-voice";
 import { featuredTake } from "@/lib/featured";
 import { decodeTake, loadTakes } from "@/lib/take";
@@ -55,18 +56,19 @@ function StudioBody({ getJwt, onDisconnect }: { getJwt: () => Promise<string>; o
   const [tab, setTab] = useState<Tab>("direct");
   const [thumbs, setThumbs] = useState<Record<string, string>>({});
 
-  // Test entry point (only with ?voicetest=1): server side recording of the session, as an MP4.
-  const requestRecording = useReactor((s) => s.requestRecording);
+  // Full quality MP4 of the session, recorded on Reactor's side.
+  const hd = useServerRecording(getJwt);
+  const { save: saveHd } = hd;
+  // Test entry point (only with ?voicetest=1).
   useEffect(() => {
     if (!new URLSearchParams(window.location.search).has("voicetest")) return;
-    const w = window as unknown as { __unstillRecording?: () => Promise<string> };
+    const w = window as unknown as { __unstillRecording?: () => Promise<string | null> };
     w.__unstillRecording = async () => {
-      const clip = await requestRecording();
-      const blob = await downloadClipAsFile(clip, null);
-      return URL.createObjectURL(blob);
+      const blob = await saveHd("test.mp4", { trigger: false });
+      return blob ? URL.createObjectURL(blob) : null;
     };
     return () => { delete w.__unstillRecording; };
-  }, [requestRecording]);
+  }, [saveHd]);
 
   // A fresh session needs a fresh token.
   useEffect(() => {
@@ -118,7 +120,12 @@ function StudioBody({ getJwt, onDisconnect }: { getJwt: () => Promise<string>; o
       <main className="studio-grid">
         <section className="stage-col" aria-label="Live picture">
           <Stage u={u} voice={voice} />
-          <Transport u={u} voice={voice} />
+          <Transport u={u} voice={voice} hd={hd} />
+          {hd.state === "error" && (
+            <div className="banner banner-error" role="alert">
+              <span>The HD video could not be saved: {hd.error}</span>
+            </div>
+          )}
           {voice.error && <div className="banner banner-error" role="alert"><span>{voice.error}</span></div>}
           {(u.error || u.notice) && (
             <div className={`banner ${u.error ? "banner-error" : ""}`} role={u.error ? "alert" : "status"}>

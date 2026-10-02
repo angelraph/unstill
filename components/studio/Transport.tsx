@@ -4,9 +4,18 @@ import { useCallback } from "react";
 
 import { useRecorder } from "@/hooks/use-recorder";
 import type { Unstill } from "@/hooks/use-unstill";
+import type { useServerRecording } from "@/hooks/use-server-recording";
 import type { useVoice } from "@/hooks/use-voice";
 
-export function Transport({ u, voice }: { u: Unstill; voice: ReturnType<typeof useVoice> }) {
+export function Transport({
+  u,
+  voice,
+  hd,
+}: {
+  u: Unstill;
+  voice: ReturnType<typeof useVoice>;
+  hd: ReturnType<typeof useServerRecording>;
+}) {
   const name = useCallback(
     () => `unstill-${u.watch?.id ?? "photo"}-seed${u.seed}-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "")}.webm`,
     [u.watch, u.seed],
@@ -77,6 +86,21 @@ export function Transport({ u, voice }: { u: Unstill; voice: ReturnType<typeof u
             {rec.recording ? `Stop ${fmt(rec.seconds)}` : "Record"}
           </button>
         )}
+
+        <button
+          className={`btn ${hd.state === "done" ? "btn-on" : ""}`}
+          onClick={() => hd.save(`unstill-${u.watch?.id ?? "photo"}-seed${u.seed}.mp4`)}
+          disabled={!running || hd.state === "preparing" || hd.state === "downloading"}
+          title="Download this session as a full quality MP4 recorded on Reactor's servers"
+        >
+          {hd.state === "preparing"
+            ? "Preparing video"
+            : hd.state === "downloading"
+              ? `Saving ${hd.progress}%`
+              : hd.state === "done"
+                ? "Saved"
+                : "Save HD video"}
+        </button>
       </div>
 
       <div className="transport-side">
