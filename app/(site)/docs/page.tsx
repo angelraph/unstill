@@ -335,8 +335,10 @@ export default function Docs() {
         <section id="record">
           <h2>Recording</h2>
           <p>
-            Record captures the live picture and sound in your browser and downloads a .webm file when you stop. Nothing is
-            uploaded.
+            <strong>Save HD video</strong> downloads the session as a full quality 1080p MP4 with the stream&apos;s own sound,
+            recorded on Reactor&apos;s servers, so your computer does no encoding and the frame rate stays smooth. It is ready
+            a few seconds after you press it. <strong>Record</strong> captures the picture in your browser instead and
+            downloads a .webm when you stop.
           </p>
         </section>
 
