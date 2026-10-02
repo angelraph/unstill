@@ -20,7 +20,7 @@ const AXIS_RULES: Rule[] = [
   { words: ["rain", "raining", "rainy", "downpour", "storm"], action: { kind: "axis", axis: "weather", value: "rain", label: "Weather: Rain" } },
   { words: ["fog", "foggy", "mist", "misty", "haze"], action: { kind: "axis", axis: "weather", value: "fog", label: "Weather: Fog" } },
   { words: ["snow", "snowing", "snowy", "blizzard"], action: { kind: "axis", axis: "weather", value: "snow", label: "Weather: Snow" } },
-  { words: ["empty", "clear the street", "clear the frame", "nobody", "deserted"], action: { kind: "axis", axis: "crowd", value: "empty", label: "Occupancy: Empty" } },
+  { words: ["empty", "clear the street", "clear the streets", "clear the frame", "nobody", "deserted"], action: { kind: "axis", axis: "crowd", value: "empty", label: "Occupancy: Empty" } },
   { words: ["a few people", "few people", "a few", "some people", "light crowd"], action: { kind: "axis", axis: "crowd", value: "sparse", label: "Occupancy: A few" } },
   { words: ["busy", "crowd", "crowded", "packed", "rush hour"], action: { kind: "axis", axis: "crowd", value: "busy", label: "Occupancy: Busy" } },
   { words: ["lock it off", "lock it up", "lock it", "locked", "lock off", "lock the camera", "tripod", "static"], action: { kind: "axis", axis: "camera", value: "static", label: "Camera: Locked" } },
@@ -90,7 +90,14 @@ export function parseVoice(text: string, watch: Watch | null): VoiceAction[] {
   const seen = new Set<string>();
   const add = (at: number, action: VoiceAction) => {
     const key = action.kind === "axis" ? `axis:${action.axis}` : action.kind === "event" ? `event:${action.id}` : `t:${action.action}`;
-    if (at < 0 || seen.has(key)) return;
+    if (at < 0) return;
+    if (seen.has(key)) {
+      // Two settings for the same control in one breath ("sunset, night"): the last one spoken wins.
+      if (action.kind !== "axis") return;
+      const i = found.findIndex((f) => f.action.kind === "axis" && f.action.axis === action.axis);
+      if (i >= 0 && at > found[i].at) found[i] = { at, action };
+      return;
+    }
     seen.add(key);
     found.push({ at, action });
   };
@@ -105,7 +112,7 @@ export function parseVoice(text: string, watch: Watch | null): VoiceAction[] {
   for (const r of TRANSPORT_RULES) add(hits(phrase, r.words), r.action);
   for (const r of AXIS_RULES) add(hits(phrase, r.words), r.action);
 
-  // "clear" alone means the weather; "clear the street" was matched above as Empty.
+  // "clear" alone means the weather; "clear the street(s)" was matched above as Empty.
   if (!seen.has("axis:weather") && !seen.has("axis:crowd")) {
     add(hits(phrase, ["clear"]), { kind: "axis", axis: "weather", value: "clear", label: "Weather: Clear" });
   }

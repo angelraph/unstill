@@ -55,6 +55,8 @@ describe("voice direction", () => {
     expect(labels("run the queue sheets")).toEqual(["Run cue sheet"]);
     expect(labels("close the shop")).toEqual(["Shop closes"]);
     expect(labels("send a cyclist")).toEqual(["Cyclist"]);
+    expect(labels("clear the streets")).toEqual(["Occupancy: Empty"]);
+    expect(labels("sunset night")).toEqual(["Hour: Night"]);
   });
 
   it("ignores chatter", () => {
