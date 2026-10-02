@@ -94,6 +94,10 @@ export function useUnstill(getJwt: () => Promise<string>) {
   const takesRef = useRef<Take[]>([]);
   const cueRef = useRef<{ steps: CueStep[]; index: number; releasedAt: number } | null>(null);
   const replayRef = useRef<{ take: Take; index: number; branch?: boolean } | null>(null);
+  const pausePendingRef = useRef(false);
+  const resumeWantedRef = useRef(false);
+  const sendCommandRef = useRef(sendCommand);
+  sendCommandRef.current = sendCommand;
   const photosByTake = useRef<Map<string, File>>(new Map());
   const conditionsResolver = useRef<(() => void) | null>(null);
   const imageResolver = useRef<(() => void) | null>(null);
@@ -309,7 +313,13 @@ export function useUnstill(getJwt: () => Promise<string>) {
           void pumpRef.current();
           break;
         case "generation_paused":
+          pausePendingRef.current = false;
           setPhase("paused");
+          // A resume asked for while the pause was still landing wins.
+          if (resumeWantedRef.current) {
+            resumeWantedRef.current = false;
+            void sendCommandRef.current("resume", {});
+          }
           break;
         case "generation_resumed":
           setPhase("live");
@@ -617,8 +627,21 @@ export function useUnstill(getJwt: () => Promise<string>) {
         await disconnect();
       }),
     roll: () => guard(() => roll()),
-    pause: () => guard(async () => void (await sendCommand("pause", {}))),
-    resume: () => guard(async () => void (await sendCommand("resume", {}))),
+    pause: () =>
+      guard(async () => {
+        resumeWantedRef.current = false;
+        pausePendingRef.current = true;
+        await sendCommand("pause", {});
+      }),
+    resume: () =>
+      guard(async () => {
+        // Orbis pauses at the end of the current chunk. If that has not landed yet, resume when it does.
+        if (phaseRef.current !== "paused" && pausePendingRef.current) {
+          resumeWantedRef.current = true;
+          return;
+        }
+        await sendCommand("resume", {});
+      }),
     cut: () =>
       guard(async () => {
         await sendCommand("reset", {});

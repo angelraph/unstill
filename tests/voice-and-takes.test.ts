@@ -47,6 +47,16 @@ describe("voice direction", () => {
     expect(labels("resume")).toEqual(["Resume"]);
   });
 
+  it("handles the founder's real test phrases", () => {
+    // From the recorded test session that froze on "hold and resume".
+    expect(labels("hold and resume")).toEqual(["Resume"]);
+    expect(labels("lock it up")).toEqual(["Camera: Locked"]);
+    expect(labels("pan over")).toEqual(["Camera: Pan"]);
+    expect(labels("run the queue sheets")).toEqual(["Run cue sheet"]);
+    expect(labels("close the shop")).toEqual(["Shop closes"]);
+    expect(labels("send a cyclist")).toEqual(["Cyclist"]);
+  });
+
   it("ignores chatter", () => {
     expect(labels("what do you think of this shot")).toEqual([]);
   });

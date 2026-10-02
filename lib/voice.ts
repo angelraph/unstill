@@ -23,10 +23,10 @@ const AXIS_RULES: Rule[] = [
   { words: ["empty", "clear the street", "clear the frame", "nobody", "deserted"], action: { kind: "axis", axis: "crowd", value: "empty", label: "Occupancy: Empty" } },
   { words: ["a few people", "few people", "a few", "some people", "light crowd"], action: { kind: "axis", axis: "crowd", value: "sparse", label: "Occupancy: A few" } },
   { words: ["busy", "crowd", "crowded", "packed", "rush hour"], action: { kind: "axis", axis: "crowd", value: "busy", label: "Occupancy: Busy" } },
-  { words: ["lock it off", "locked", "lock the camera", "tripod", "static"], action: { kind: "axis", axis: "camera", value: "static", label: "Camera: Locked" } },
+  { words: ["lock it off", "lock it up", "lock it", "locked", "lock off", "lock the camera", "tripod", "static"], action: { kind: "axis", axis: "camera", value: "static", label: "Camera: Locked" } },
   { words: ["push in", "push", "dolly in", "move in", "move closer", "go closer"], action: { kind: "axis", axis: "camera", value: "push", label: "Camera: Push in" } },
   { words: ["handheld", "hand held"], action: { kind: "axis", axis: "camera", value: "handheld", label: "Camera: Handheld" } },
-  { words: ["pan", "pan across", "pan left", "pan right"], action: { kind: "axis", axis: "camera", value: "pan", label: "Camera: Pan" } },
+  { words: ["pan", "pan over", "pan across", "pan left", "pan right"], action: { kind: "axis", axis: "camera", value: "pan", label: "Camera: Pan" } },
   { words: ["overhead", "top down", "top shot", "crane up", "birds eye", "bird's eye"], action: { kind: "axis", axis: "camera", value: "overhead", label: "Camera: Overhead" } },
 ];
 
@@ -37,7 +37,7 @@ const TRANSPORT_RULES: Rule[] = [
   { words: ["that's a wrap", "wrap it up", "end the take", "stop the take"], action: { kind: "transport", action: "cut", label: "Cut" } },
   { words: ["hold the shot", "hold the world", "pause the world", "pause the shot", "freeze the frame", "freeze the world"], action: { kind: "transport", action: "hold", label: "Hold" } },
   { words: ["resume", "keep rolling", "unpause", "unfreeze"], action: { kind: "transport", action: "resume", label: "Resume" } },
-  { words: ["run the cue", "cue sheet", "run cue", "play the cue"], action: { kind: "transport", action: "cue", label: "Run cue sheet" } },
+  { words: ["run the cue", "cue sheet", "cue sheets", "queue sheet", "queue sheets", "run cue", "run the queue", "play the cue"], action: { kind: "transport", action: "cue", label: "Run cue sheet" } },
 ];
 
 // One word calls that only count when they are the whole phrase, the way they are called on set.

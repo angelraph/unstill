@@ -46,7 +46,7 @@ export function useVoice(u: Unstill) {
       else if (a.action === "roll" && s.phase === "idle") void s.roll();
       else if (a.action === "cut" && s.phase !== "idle") void s.cut();
       else if (a.action === "hold" && s.phase === "live") void s.pause();
-      else if (a.action === "resume" && s.phase === "paused") void s.resume();
+      else if (a.action === "resume" && s.phase !== "idle") void s.resume();
       else if (a.action === "cue" && s.phase === "live") s.runCue();
     }
   }, []);
@@ -112,6 +112,20 @@ export function useVoice(u: Unstill) {
   }, []);
 
   useEffect(() => () => { want.current = false; rec.current?.stop(); }, []);
+
+  // Test entry point (only with ?voicetest=1): feeds a phrase through the same path as recognized speech.
+  useEffect(() => {
+    if (!new URLSearchParams(window.location.search).has("voicetest")) return;
+    const w = window as unknown as { __unstillVoice?: (text: string) => void };
+    w.__unstillVoice = (text: string) => {
+      setListening(true);
+      setHearing("speech");
+      const actions = parseVoice(text, uRef.current.watch);
+      setHeard({ id: ++seq.current, text, actions });
+      perform(actions);
+    };
+    return () => { delete w.__unstillVoice; };
+  }, [perform]);
 
   return { supported, listening, interim, heard, error, hearing, start, stop, toggle: () => (listening ? stop() : start()) };
 }
