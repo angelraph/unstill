@@ -25,6 +25,8 @@ export function useVoice(u: Unstill) {
   const [interim, setInterim] = useState("");
   const [heard, setHeard] = useState<Heard | null>(null);
   const [error, setError] = useState("");
+  // none: waiting for the microphone, mic: audio is flowing, speech: a voice was detected
+  const [hearing, setHearing] = useState<"none" | "mic" | "speech">("none");
   const rec = useRef<Recognition | null>(null);
   const want = useRef(false);
   const uRef = useRef(u);
@@ -57,6 +59,8 @@ export function useVoice(u: Unstill) {
     r.continuous = true;
     r.interimResults = true;
     r.lang = "en-US";
+    (r as unknown as { onaudiostart: () => void }).onaudiostart = () => setHearing("mic");
+    (r as unknown as { onspeechstart: () => void }).onspeechstart = () => setHearing("speech");
     r.onresult = (e) => {
       let live = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
@@ -71,10 +75,16 @@ export function useVoice(u: Unstill) {
       setInterim(live.trim());
     };
     r.onerror = (e) => {
-      if (e.error === "not-allowed" || e.error === "service-not-allowed") {
-        want.current = false;
-        setError("Microphone access was blocked. Allow it in the address bar to direct by voice.");
-      }
+      const messages: Record<string, string> = {
+        "not-allowed": "Microphone access was blocked. Click the camera icon in the address bar, allow the microphone, then try again.",
+        "service-not-allowed": "This browser does not allow speech recognition here. Use Chrome or Edge on desktop.",
+        "audio-capture": "No microphone was found. Check that a microphone is connected and selected in your system sound settings.",
+        network: "The browser could not reach its speech service. Check your connection and try again.",
+        "language-not-supported": "English speech recognition is not available in this browser.",
+      };
+      if (e.error === "no-speech" || e.error === "aborted") return;
+      want.current = false;
+      setError(messages[e.error] ?? `Voice stopped: ${e.error}.`);
     };
     r.onend = () => {
       setInterim("");
@@ -85,6 +95,7 @@ export function useVoice(u: Unstill) {
     rec.current = r;
     want.current = true;
     setError("");
+    setHearing("none");
     try {
       r.start();
       setListening(true);
@@ -102,5 +113,5 @@ export function useVoice(u: Unstill) {
 
   useEffect(() => () => { want.current = false; rec.current?.stop(); }, []);
 
-  return { supported, listening, interim, heard, error, start, stop, toggle: () => (listening ? stop() : start()) };
+  return { supported, listening, interim, heard, error, hearing, start, stop, toggle: () => (listening ? stop() : start()) };
 }

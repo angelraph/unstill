@@ -83,8 +83,12 @@ export function Stage({ u, voice }: { u: Unstill; voice: ReturnType<typeof useVo
                   {heard.actions.length ? heard.actions.map((a) => a.label).join(" · ") : "No cue heard"}
                 </span>
               </>
+            ) : voice.hearing === "none" ? (
+              <span className="voice-text">Waiting for the microphone…</span>
             ) : (
-              <span className="voice-text">Say “action”, then “rain”, “night”, “cab stops”, “cut”</span>
+              <span className="voice-text">
+                {voice.hearing === "speech" ? "Hearing you…" : "Microphone on."} Say “rain”, “night”, “cab stops”, “cut”
+              </span>
             )}
           </div>
         )}
