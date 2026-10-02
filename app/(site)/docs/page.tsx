@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 
 const NAV = [
   { group: "Start", items: [["quickstart", "Quickstart"], ["studio", "Studio tour"], ["shortcuts", "Keyboard shortcuts"]] },
-  { group: "Direct", items: [["directives", "Directives"], ["events", "Events and cue sheets"], ["queue", "The queue"]] },
-  { group: "Keep", items: [["takes", "Takes and replay"], ["photo", "Your photograph"], ["record", "Recording"]] },
+  { group: "Direct", items: [["directives", "Directives"], ["voice", "Direct by voice"], ["events", "Events and cue sheets"], ["queue", "The queue"]] },
+  { group: "Keep", items: [["takes", "Takes and replay"], ["branch", "Branching: what if"], ["share", "Share a take"], ["photo", "Your photograph"], ["record", "Recording"]] },
   { group: "Build", items: [["self-host", "Self hosting"], ["troubleshooting", "Troubleshooting"]] },
 ];
 
@@ -188,6 +188,55 @@ export default function Docs() {
           </div>
         </section>
 
+        <section id="voice">
+          <h2>Direct by voice</h2>
+          <p>
+            Press <strong>Direct by voice</strong> and call the shot like you would on set. The studio listens, shows what it
+            heard on the picture, and turns each phrase into deck actions in the order you said them. Recognition runs in your
+            browser; Chrome and Edge support it.
+          </p>
+          <div className="table-wrap">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Say</th>
+                  <th>What happens</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>“Action”</td>
+                  <td>Roll the current Watch</td>
+                </tr>
+                <tr>
+                  <td>“Rain, then night”</td>
+                  <td>Weather: Rain, then Hour: Night, released on the beat</td>
+                </tr>
+                <tr>
+                  <td>“Clear the street”</td>
+                  <td>Occupancy: Empty</td>
+                </tr>
+                <tr>
+                  <td>“Give me a slow push in”</td>
+                  <td>Camera: Push in</td>
+                </tr>
+                <tr>
+                  <td>“Have the taxi pull up”</td>
+                  <td>The Cab stops event on The Corner</td>
+                </tr>
+                <tr>
+                  <td>“Run the cue sheet”</td>
+                  <td>Plays the Watch cue sheet</td>
+                </tr>
+                <tr>
+                  <td>“Hold” · “Resume” · “Cut”</td>
+                  <td>Transport</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         <section id="events">
           <h2>Events and cue sheets</h2>
           <p>Each Watch has four events. One action per event, so it reads clearly in the picture.</p>
@@ -231,6 +280,31 @@ export default function Docs() {
           <div className="callout">
             Takes that opened on a photograph replay only while that photograph is still loaded in the studio.
           </div>
+        </section>
+
+        <section id="branch">
+          <h2>Branching: what if</h2>
+          <p>
+            Every take can fork. Under a take, pick a beat in <strong>What if, after</strong> and press <strong>Branch</strong>.
+            The studio replays the same seed and the same beats up to that point, so the world arrives where it was, then hands
+            control back to you. Direct a different future: snow instead of rain, a cyclist instead of a cab. The branch is
+            saved as its own take, labelled with the take it came from.
+          </p>
+          <div className="callout">
+            This is the counterfactual Live Models make possible: one shared past, two futures of the same street.
+          </div>
+        </section>
+
+        <section id="share">
+          <h2>Share a take</h2>
+          <p>
+            <strong>Copy link</strong> on any take creates a link that carries the seed, the opening and every beat. Anyone who
+            opens it gets the take in their studio, ready to replay.
+          </p>
+          <p>
+            Try one of our live test takes: <Link href="/studio#take=featured">open the featured Corner take</Link> (seed
+            75256, the Dusk to an empty night cue sheet), then press Replay.
+          </p>
         </section>
 
         <section id="photo">

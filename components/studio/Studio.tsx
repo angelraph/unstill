@@ -10,6 +10,9 @@ import { Ledger } from "@/components/studio/Ledger";
 import { Stage } from "@/components/studio/Stage";
 import { Transport } from "@/components/studio/Transport";
 import { useUnstill, type Unstill } from "@/hooks/use-unstill";
+import { useVoice } from "@/hooks/use-voice";
+import { featuredTake } from "@/lib/featured";
+import { decodeTake, loadTakes } from "@/lib/take";
 import { ORBIS_MODEL_NAME, ORBIS_TRACKS, REACTOR_API_URL, requestReactorJwt } from "@/lib/orbis";
 
 import "./studio.css";
@@ -48,6 +51,7 @@ type Tab = "direct" | "takes" | "log";
 
 function StudioBody({ getJwt, onDisconnect }: { getJwt: () => Promise<string>; onDisconnect: () => void }) {
   const u = useUnstill(getJwt);
+  const voice = useVoice(u);
   const [tab, setTab] = useState<Tab>("direct");
   const [thumbs, setThumbs] = useState<Record<string, string>>({});
 
@@ -56,12 +60,21 @@ function StudioBody({ getJwt, onDisconnect }: { getJwt: () => Promise<string>; o
     if (u.status === "disconnected") onDisconnect();
   }, [u.status, onDisconnect]);
 
-  // Open a Watch from a link such as /studio?watch=bay.
-  const { chooseWatch } = u;
+  // Open a Watch from a link such as /studio?watch=bay, or a shared take from /studio#take=...
+  const { chooseWatch, importTake } = u;
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("watch");
     if (id) chooseWatch(id);
-  }, [chooseWatch]);
+    const code = new URLSearchParams(window.location.hash.slice(1)).get("take");
+    if (!code) return;
+    const take = code === "featured" ? featuredTake() : decodeTake(code);
+    if (!take) return;
+    const stored = loadTakes();
+    const number = stored.find((t) => t.id === take.id)?.number ?? (stored[0]?.number ?? 0) + 1;
+    importTake({ ...take, number });
+    chooseWatch(take.watchId);
+    setTab("takes");
+  }, [chooseWatch, importTake]);
 
   // Filmstrip: grab a frame from the live picture once each beat has had time to land.
   const latestId = u.log[0]?.id;
@@ -91,8 +104,9 @@ function StudioBody({ getJwt, onDisconnect }: { getJwt: () => Promise<string>; o
       <Masthead u={u} />
       <main className="studio-grid">
         <section className="stage-col" aria-label="Live picture">
-          <Stage u={u} />
-          <Transport u={u} />
+          <Stage u={u} voice={voice} />
+          <Transport u={u} voice={voice} />
+          {voice.error && <div className="banner banner-error" role="alert"><span>{voice.error}</span></div>}
           {(u.error || u.notice) && (
             <div className={`banner ${u.error ? "banner-error" : ""}`} role={u.error ? "alert" : "status"}>
               <span>{message}</span>

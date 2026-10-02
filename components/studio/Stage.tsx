@@ -3,11 +3,13 @@
 import { ReactorView } from "@reactor-team/js-sdk";
 
 import type { Unstill } from "@/hooks/use-unstill";
+import type { useVoice } from "@/hooks/use-voice";
 
-export function Stage({ u }: { u: Unstill }) {
+export function Stage({ u, voice }: { u: Unstill; voice: ReturnType<typeof useVoice> }) {
   const running = u.phase !== "idle";
   const latest = u.log[0];
   const showPicture = running && u.connected;
+  const heard = voice.heard;
 
   return (
     <div className="stage">
@@ -66,6 +68,25 @@ export function Stage({ u }: { u: Unstill }) {
               </div>
             )}
           </>
+        )}
+
+        {voice.listening && (
+          <div className="voice-caption" key={heard?.id ?? "live"}>
+            <span className="voice-dot" aria-hidden />
+            {voice.interim ? (
+              <span className="voice-text">{voice.interim}…</span>
+            ) : heard ? (
+              <>
+                <span className="voice-text">“{heard.text}”</span>
+                <span className="voice-arrow">{heard.actions.length ? "→" : ""}</span>
+                <span className="voice-acts">
+                  {heard.actions.length ? heard.actions.map((a) => a.label).join(" · ") : "No cue heard"}
+                </span>
+              </>
+            ) : (
+              <span className="voice-text">Say “action”, then “rain”, “night”, “cab stops”, “cut”</span>
+            )}
+          </div>
         )}
       </div>
       <ChunkRail chunk={u.chunk} running={running && u.phase !== "rolling"} lastAt={latest?.chunk ?? 0} />

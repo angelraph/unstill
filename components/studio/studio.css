@@ -221,6 +221,96 @@
   line-height: 1.5;
 }
 
+.branch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 0 46px;
+  padding: 8px 10px;
+  border: 1px dashed var(--line-2);
+  border-radius: var(--radius);
+}
+
+.branch-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.branch select {
+  height: 32px;
+  max-width: 220px;
+  padding: 0 8px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  background: var(--night);
+  font-size: 12.5px;
+}
+
+.btn-voice .mic-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--dim);
+}
+
+.btn-listening {
+  border-color: rgba(229, 72, 77, 0.6);
+  background: rgba(229, 72, 77, 0.14);
+}
+
+.btn-listening .mic-dot {
+  background: var(--tally);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.voice-caption {
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 28px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(229, 72, 77, 0.45);
+  background: rgba(14, 13, 11, 0.8);
+  backdrop-filter: blur(8px);
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  animation: rise 0.3s ease-out;
+  z-index: 3;
+}
+
+.voice-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tally);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.voice-text {
+  color: var(--chalk-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.voice-arrow {
+  color: var(--dim);
+}
+
+.voice-acts {
+  color: var(--amber);
+  font-weight: 600;
+}
+
 .poster-roll {
   align-self: flex-start;
   display: inline-flex;

@@ -23,8 +23,8 @@ const BENTO = [
   { cls: "b-wide", k: "Continuity compiler", t: "The world is built once.", b: "The opening describes everything. Every prompt after it names one visible change, in physical nouns and verbs." },
   { cls: "", k: "Chunk timing", t: "Released on the beat.", b: "At most one directive per settle window, so morphs never collide." },
   { cls: "", k: "Queue", t: "See what is next.", b: "Queued changes replace each other per control. Drop any of them." },
-  { cls: "", k: "Record", t: "Keep the picture.", b: "Save picture and sound to a file in the browser." },
-  { cls: "b-glow", k: "Shortcuts", t: "Play it like an instrument.", b: "Every control has a key. 1 to 4 for the hour, Q to T for weather, 5 to 8 for events." },
+  { cls: "", k: "Voice", t: "Call the shot.", b: "Say action, rain, night, cut. The world obeys, on the beat." },
+  { cls: "b-glow", k: "Branching", t: "Two futures, one street.", b: "Replay a take to any beat, then direct a different ending. Same seed, same past." },
   { cls: "b-wide", k: "Three worlds", t: "Film, retail, robotics.", b: "The Corner, The Aisle and The Bay share one instrument. Your photograph makes four." },
 ];
 
@@ -110,6 +110,30 @@ export default function Home() {
             Five moves. One running world.
           </Reveal>
           <Slides />
+        </div>
+      </section>
+
+      <section className="band">
+        <div className="wrap">
+          <p className="eyebrow-blue mono">Unedited. Live.</p>
+          <Reveal as="h2" className="h2 two-tone">
+            Watch the street change. <span>As it happened.</span>
+          </Reveal>
+          <p className="lede">
+            One live Orbis session, recorded straight from the studio. The cue sheet runs rain, night, a cab, handheld, an
+            empty street and a push in. No cuts, no re-renders, no edits.
+          </p>
+          <div className="live-film">
+            <video src="/live-take.mp4" poster="/stills/live-poster.jpg" controls preload="none" playsInline />
+          </div>
+          <div style={{ marginTop: 20, display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <Link href="/studio#take=featured" className="pill pill-light">
+              Replay a live take in the studio
+            </Link>
+            <Link href="/docs#branch" className="pill pill-ghost">
+              Branch it: what if →
+            </Link>
+          </div>
         </div>
       </section>
 

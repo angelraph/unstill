@@ -62,6 +62,49 @@ export function exportTake(take: Take) {
   downloadBlob(blob, `unstill-take-${take.number}-${take.watchId}.json`);
 }
 
+/** Compact, URL safe encoding so a take can travel in a link. */
+export function encodeTake(take: Take): string {
+  const compact = {
+    w: take.watchId,
+    n: take.watchName,
+    s: take.seed,
+    o: take.opening,
+    b: take.beats.map((b) => [b.chunk, b.label, b.prompt]),
+  };
+  const bytes = new TextEncoder().encode(JSON.stringify(compact));
+  let bin = "";
+  bytes.forEach((x) => (bin += String.fromCharCode(x)));
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+export function decodeTake(code: string): Take | null {
+  try {
+    const b64 = code.replace(/-/g, "+").replace(/_/g, "/");
+    const bin = atob(b64 + "===".slice((b64.length + 3) % 4));
+    const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+    const c = JSON.parse(new TextDecoder().decode(bytes)) as { w: string; n: string; s: number; o: string; b: [number, string, string][] };
+    if (typeof c.s !== "number" || typeof c.o !== "string" || !Array.isArray(c.b)) return null;
+    return {
+      id: `shared-${c.s}-${c.b.length}`,
+      number: 0,
+      watchId: c.w,
+      watchName: c.n,
+      seed: c.s,
+      opening: c.o,
+      openingLabel: c.n,
+      anchored: false,
+      createdAt: new Date().toISOString(),
+      beats: c.b.map(([chunk, label, prompt]) => ({ chunk, label, prompt })),
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function takeLink(take: Take, origin = typeof window !== "undefined" ? window.location.origin : "https://unstill-pied.vercel.app") {
+  return `${origin}/studio#take=${encodeTake(take)}`;
+}
+
 export function parseTake(text: string): Take | null {
   try {
     const t = JSON.parse(text) as Take;

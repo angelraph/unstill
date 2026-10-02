@@ -4,8 +4,9 @@ import { useCallback } from "react";
 
 import { useRecorder } from "@/hooks/use-recorder";
 import type { Unstill } from "@/hooks/use-unstill";
+import type { useVoice } from "@/hooks/use-voice";
 
-export function Transport({ u }: { u: Unstill }) {
+export function Transport({ u, voice }: { u: Unstill; voice: ReturnType<typeof useVoice> }) {
   const name = useCallback(
     () => `unstill-${u.watch?.id ?? "photo"}-seed${u.seed}-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "")}.webm`,
     [u.watch, u.seed],
@@ -48,6 +49,18 @@ export function Transport({ u }: { u: Unstill }) {
               Cut
             </button>
           </>
+        )}
+
+        {voice.supported && (
+          <button
+            className={`btn btn-voice ${voice.listening ? "btn-listening" : ""}`}
+            onClick={voice.toggle}
+            aria-pressed={voice.listening}
+            title='Say "action", "rain", "night", "cab stops", "push in", "cut"'
+          >
+            <span className="mic-dot" aria-hidden />
+            {voice.listening ? "Listening" : "Direct by voice"}
+          </button>
         )}
 
         <button className={`btn ${u.muted ? "" : "btn-on"}`} onClick={u.toggleMuted} aria-pressed={!u.muted}>

@@ -93,7 +93,7 @@ export function useUnstill(getJwt: () => Promise<string>) {
   const takeRef = useRef<Take | null>(null);
   const takesRef = useRef<Take[]>([]);
   const cueRef = useRef<{ steps: CueStep[]; index: number; releasedAt: number } | null>(null);
-  const replayRef = useRef<{ take: Take; index: number } | null>(null);
+  const replayRef = useRef<{ take: Take; index: number; branch?: boolean } | null>(null);
   const photosByTake = useRef<Map<string, File>>(new Map());
   const conditionsResolver = useRef<(() => void) | null>(null);
   const imageResolver = useRef<(() => void) | null>(null);
@@ -215,7 +215,11 @@ export function useUnstill(getJwt: () => Promise<string>) {
       if (!beat) {
         replayRef.current = null;
         setReplayTake(null);
-        setNotice(`Take ${replay.take.number} replayed in full.`);
+        setNotice(
+          replay.branch
+            ? `Branch point reached at chunk ${now}. Same world so far. Direct a different future.`
+            : `Take ${replay.take.number} replayed in full.`,
+        );
         return;
       }
       if (now >= beat.chunk) {
@@ -357,7 +361,7 @@ export function useUnstill(getJwt: () => Promise<string>) {
 
   /** Upload, condition, prompt, start. The ordering Orbis requires for image to video. */
   const roll = useCallback(
-    async (opts?: { prompt?: string; seed?: number; image?: File | null; take?: Take; label?: string }) => {
+    async (opts?: { prompt?: string; seed?: number; image?: File | null; take?: Take; label?: string; branchOf?: Take }) => {
       const runPrompt = opts?.prompt ?? opening;
       const runSeed = opts?.seed ?? seed;
       const runImage = opts?.image === undefined ? (watchId === PHOTO_WATCH_ID ? photo : null) : opts.image;
@@ -401,19 +405,21 @@ export function useUnstill(getJwt: () => Promise<string>) {
         setLog([]);
         pushLog({ chunk: 0, label: opts?.label ?? "Opening", prompt: runPrompt, kind: "opening" });
 
-        if (!opts?.take) {
+        if (!opts?.take || opts.branchOf) {
           const number = (takesRef.current[0]?.number ?? 0) + 1;
+          const parent = opts?.branchOf;
           const take: Take = {
             id: uid(),
             number,
-            watchId,
-            watchName: watch ? watch.name : "Your photograph",
+            watchId: parent ? parent.watchId : watchId,
+            watchName: parent ? `${parent.watchName.replace(/ · branch of .*$/, "")} · branch of ${parent.number}` : watch ? watch.name : "Your photograph",
             seed: runSeed,
             opening: runPrompt,
-            openingLabel: watch ? watch.name : "Your photograph",
+            openingLabel: parent ? parent.openingLabel : watch ? watch.name : "Your photograph",
             anchored: Boolean(runImage),
             createdAt: new Date().toISOString(),
-            beats: [],
+            // A branch keeps the shared past; the new future is appended as it is directed.
+            beats: opts?.take ? [...opts.take.beats] : [],
           };
           takeRef.current = take;
           setActiveTakeId(take.id);
@@ -519,8 +525,11 @@ export function useUnstill(getJwt: () => Promise<string>) {
   }, []);
 
   const replay = useCallback(
-    (take: Take) =>
+    /** keep: replay only the first N beats, then hand control back. The run is saved as a branch take. */
+    (original: Take, keep?: number) =>
       guard(async () => {
+        const branching = keep !== undefined && keep < original.beats.length;
+        const take = branching ? { ...original, beats: original.beats.slice(0, keep) } : original;
         if (phaseRef.current !== "idle") throw new Error("Cut the current run before replaying a take.");
         const image = take.anchored ? photosByTake.current.get(take.id) ?? null : null;
         if (take.anchored && !image) {
@@ -531,9 +540,16 @@ export function useUnstill(getJwt: () => Promise<string>) {
           setTarget(watchById(take.watchId)!.initial);
         }
         setSeed(take.seed);
-        replayRef.current = { take, index: 0 };
+        replayRef.current = { take, index: 0, branch: branching };
         setReplayTake(take);
-        await roll({ prompt: take.opening, seed: take.seed, image, take, label: `Replay of take ${take.number}` });
+        await roll({
+          prompt: take.opening,
+          seed: take.seed,
+          image,
+          take,
+          label: branching ? `Branch of take ${original.number} after ${take.beats.at(-1)?.label ?? "the opening"}` : `Replay of take ${take.number}`,
+          branchOf: branching ? original : undefined,
+        });
       }).finally(() => {
         if (phaseRef.current === "idle") {
           replayRef.current = null;
