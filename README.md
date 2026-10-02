@@ -14,6 +14,18 @@ UNSTILL is a live direction deck for places, built on Visko Orbis. Lock a locati
 
 Made for the Visko Orbis Online Challenge, 2026, by Uzoechi Raphael.
 
+## Try it in 60 seconds
+
+1. Open the [studio](https://unstill-pied.vercel.app/studio). The Corner is selected.
+2. Press **Go live** (top right) or **Roll · go live** on the picture. About twenty seconds later the street is live at dusk.
+3. Press **E** for rain, then **4** for night. Each change lands on the next Orbis chunk, and the watch log stamps the chunk with a live thumbnail.
+4. Press **Direct by voice** and say *"have the taxi pull up"*, then *"push in"*. The caption on the picture shows what was heard and what it did.
+5. Or press **Run cue sheet** and watch a ninety second scene direct itself.
+6. Press **Cut**. Your run is saved under **Takes**. Press **Copy link** to share it, or choose a beat under **What if, after** and press **Branch** to direct a different future from that moment.
+7. Press **Release GPU** when you are done.
+
+To see a recorded run without spending a session, open the [featured take](https://unstill-pied.vercel.app/studio#take=featured) or watch the [unedited live take](https://unstill-pied.vercel.app/live-take.mp4).
+
 ## Why it needs a Live Model
 
 A clip is finished the moment it renders. To make it rain, you render another one, and you get another street. A place keeps running. In UNSTILL you make it rain on the street that is already there, let night fall on it, then empty it, in one continuous shot. That only exists with real time generation.
@@ -47,6 +59,9 @@ Visko describes Live Models through six pillars. This is where each one shows up
 | Share a take | One link carries the whole take. Anyone can open it and replay |
 | Watch log | Every prompt with its chunk and a thumbnail grabbed from the live picture |
 | Record | Saves the live picture and sound to a .webm file in the browser |
+| Go live | One click from the tally or the picture starts a session. Sessions start only on demand and end with Cut or Release GPU, so credits are never spent by an idle page |
+| Deep links | `/studio?watch=aisle` opens a Watch, `/studio#take=...` opens a shared take |
+| Site | Home, Watches, How it works, Docs and FAQ, each a standalone page |
 
 ## Architecture
 
