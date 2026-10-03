@@ -2,8 +2,9 @@
 // Server side only. Reads KV_REST_API_* (Vercel naming) or UPSTASH_REDIS_REST_* (Upstash naming).
 
 function config() {
-  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  const env = process.env;
+  const url = env.KV_REST_API_URL || env.STORAGE_KV_REST_API_URL || env.STORAGE_REST_API_URL || env.UPSTASH_REDIS_REST_URL;
+  const token = env.KV_REST_API_TOKEN || env.STORAGE_KV_REST_API_TOKEN || env.STORAGE_REST_API_TOKEN || env.UPSTASH_REDIS_REST_TOKEN;
   return url && token ? { url: url.replace(/\/$/, ""), token } : null;
 }
 
