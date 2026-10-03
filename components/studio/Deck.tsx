@@ -186,14 +186,17 @@ function PhotoInput({ u, disabled }: { u: Unstill; disabled: boolean }) {
         <span>What is in it (needed, Orbis holds to these words)</span>
         <input
           type="text"
-          placeholder="A quiet harbor with fishing boats at low tide"
+          placeholder={u.describing ? "Describing the photograph…" : "A quiet harbor with fishing boats at low tide"}
           value={u.caption}
           maxLength={160}
-          disabled={disabled}
+          disabled={disabled || u.describing}
           onChange={(e) => u.setCaption(e.target.value)}
         />
       </label>
-      <p className="fine">Cropped to 16:9 in your browser before upload, so nothing is squashed.</p>
+      <p className="fine">
+        Cropped to 16:9 in your browser before upload, so nothing is squashed. When set up, the description is written for
+        you; change any word you like.
+      </p>
     </div>
   );
 }

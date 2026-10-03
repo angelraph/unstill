@@ -4,7 +4,7 @@ import { useReactor, useReactorMessage } from "@reactor-team/js-sdk";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { compileOpening, compilePhotoOpening, compileShift, PHOTO_NOUNS } from "@/lib/compiler";
-import { cropTo169 } from "@/lib/image";
+import { cropTo169, describePhoto } from "@/lib/image";
 import { SETTLE_CHUNKS, unwrapOrbisMessage, type OrbisMessage } from "@/lib/orbis";
 import { loadTakes, newSeed, saveTakes, type Take } from "@/lib/take";
 import {
@@ -61,6 +61,8 @@ export function useUnstill(getJwt: () => Promise<string>) {
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [caption, setCaption] = useState("");
+  const [describing, setDescribing] = useState(false);
+  const describeTicket = useRef(0);
   const [seed, setSeed] = useState<number>(0);
   const [resolution, setResolution] = useState("");
   const [availableResolutions, setAvailableResolutions] = useState<string[]>(["1080p", "2k", "4k"]);
@@ -473,6 +475,16 @@ export function useUnstill(getJwt: () => Promise<string>) {
         const cropped = await cropTo169(file);
         setPhoto(cropped);
         chooseWatch(PHOTO_WATCH_ID);
+        // Fill in the description automatically when the server can; the field stays editable.
+        const ticket = ++describeTicket.current;
+        setDescribing(true);
+        void describePhoto(cropped)
+          .then((text) => {
+            if (text && ticket === describeTicket.current) setCaption((current) => (current.trim() ? current : text));
+          })
+          .finally(() => {
+            if (ticket === describeTicket.current) setDescribing(false);
+          });
       }),
     [guard, chooseWatch],
   );
@@ -617,8 +629,9 @@ export function useUnstill(getJwt: () => Promise<string>) {
     photo,
     photoUrl,
     caption,
+    describing,
     /** A photo world needs the photo and a few words on what is in it. */
-    ready: watchId !== PHOTO_WATCH_ID || (Boolean(photo) && caption.trim().length > 2),
+    ready: watchId !== PHOTO_WATCH_ID || (Boolean(photo) && caption.trim().length > 2 && !describing),
     seed,
     // takes
     takes,

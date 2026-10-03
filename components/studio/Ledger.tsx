@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
 import type { Unstill } from "@/hooks/use-unstill";
 import { exportTake, parseTake, takeLink, type Take } from "@/lib/take";
@@ -51,6 +52,80 @@ function CopyLink({ take }: { take: Take }) {
   );
 }
 
+let wallProbe: Promise<boolean> | null = null;
+function useWallEnabled() {
+  const [enabled, setEnabled] = useState(false);
+  useEffect(() => {
+    wallProbe ??= fetch("/api/wall")
+      .then((r) => r.json())
+      .then((j: { enabled?: boolean }) => Boolean(j.enabled))
+      .catch(() => false);
+    let live = true;
+    void wallProbe.then((v) => live && setEnabled(v));
+    return () => {
+      live = false;
+    };
+  }, []);
+  return enabled;
+}
+
+/** Share a take on the public wall, where anyone can replay it or branch it. */
+function PostToWall({ take }: { take: Take }) {
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState(`${take.watchName.replace(/ · branch of .*$/, "")}, seed ${take.seed}`);
+  const [author, setAuthor] = useState("");
+  const [state, setState] = useState<"idle" | "posting" | "done" | "error">("idle");
+  const [message, setMessage] = useState("");
+  const blocked = take.anchored ? "Photo takes stay private" : take.beats.length === 0 ? "Direct a beat first" : "";
+
+  if (state === "done") {
+    return (
+      <p className="wall-posted mono">
+        On the wall. <Link href="/wall">See it</Link>
+      </p>
+    );
+  }
+  if (!open) {
+    return (
+      <button className="btn btn-small btn-quiet" onClick={() => setOpen(true)} disabled={Boolean(blocked)} title={blocked || "Share this take so anyone can replay or branch it"}>
+        Post to the wall
+      </button>
+    );
+  }
+  return (
+    <form
+      className="wall-form"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setState("posting");
+        try {
+          const r = await fetch("/api/wall", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ take, title, author }),
+          });
+          const j = (await r.json()) as { error?: string };
+          if (!r.ok) throw new Error(j.error || "The wall did not take it.");
+          setState("done");
+        } catch (err) {
+          setMessage((err as Error).message);
+          setState("error");
+        }
+      }}
+    >
+      <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={60} placeholder="Title" aria-label="Title" />
+      <input value={author} onChange={(e) => setAuthor(e.target.value)} maxLength={24} placeholder="Your name (optional)" aria-label="Your name" />
+      <button className="btn btn-small" type="submit" disabled={state === "posting"}>
+        {state === "posting" ? "Posting" : "Post"}
+      </button>
+      <button className="btn btn-small btn-quiet" type="button" onClick={() => setOpen(false)}>
+        Cancel
+      </button>
+      {state === "error" && <p className="wall-error">{message}</p>}
+    </form>
+  );
+}
+
 export function Ledger({ u, thumbs }: { u: Unstill; thumbs: Record<string, string> }) {
   return (
     <div className="ledger">
@@ -95,6 +170,7 @@ function WatchLog({ u, thumbs }: { u: Unstill; thumbs: Record<string, string> })
 function Takes({ u }: { u: Unstill }) {
   const input = useRef<HTMLInputElement>(null);
   const idle = u.phase === "idle";
+  const wall = useWallEnabled();
 
   return (
     <section className="ledger-panel panel-takes" aria-label="Takes">
@@ -150,6 +226,7 @@ function Takes({ u }: { u: Unstill }) {
                 </button>
               </div>
               <Branch take={t} u={u} idle={idle} />
+              {wall && t.id !== u.activeTakeId && <PostToWall take={t} />}
             </li>
           ))}
         </ul>

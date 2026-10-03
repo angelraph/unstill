@@ -27,3 +27,22 @@ export async function cropTo169(file: File, width = 1280): Promise<File> {
   const base = file.name.replace(/\.[^.]+$/, "") || "photograph";
   return new File([blob], `${base}-16x9.jpg`, { type: "image/jpeg" });
 }
+
+/** Asks the server for a one line description of the cropped photo. Null when unavailable. */
+export async function describePhoto(file: File): Promise<string | null> {
+  try {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    let bin = "";
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+    const response = await fetch("/api/describe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: btoa(bin) }),
+    });
+    if (!response.ok) return null;
+    const { caption } = (await response.json()) as { caption?: string };
+    return caption?.trim() || null;
+  } catch {
+    return null;
+  }
+}

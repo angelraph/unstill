@@ -54,11 +54,15 @@ const GROUPS: { title: string; items: [string, string][] }[] = [
       ],
       [
         "Where are my takes stored?",
-        "In your browser. Export a take to keep it as a file or move it to another machine.",
+        "In your browser. Export a take to keep it as a file or move it to another machine. A take only leaves your browser if you press Post to the wall.",
+      ],
+      [
+        "What is the wall?",
+        "A public page of takes people chose to share. Each card is a seed and a list of beats, never a video or a photo. Open one and Orbis builds the same world again; then branch it somewhere new.",
       ],
       [
         "What happens to my photograph?",
-        "It is cropped in your browser and uploaded only to your own Orbis session to be used as the first frame. UNSTILL has no database and keeps nothing.",
+        "It is cropped in your browser and uploaded to your own Orbis session as the first frame. If automatic descriptions are on, the cropped image is also sent once to Claude to write the one line description, and is not stored. Photo takes can never be posted to the wall.",
       ],
     ],
   },
@@ -67,7 +71,7 @@ const GROUPS: { title: string; items: [string, string][] }[] = [
     items: [
       [
         "Does it cost anything to use?",
-        "Live sessions run on GPUs billed by Reactor per second. Cut when you are done and use Release GPU to end the session.",
+        "Live sessions run on GPUs billed by Reactor per second. Cut when you are done and use Release GPU to end the session. The credit guard also cuts a run nobody is directing after two minutes, and caps every run at ten.",
       ],
       [
         "The studio says credits are depleted.",

@@ -27,6 +27,7 @@ export function SiteFooter() {
           <Link href="/studio">Studio</Link>
           <Link href="/watches">Watches</Link>
           <Link href="/how-it-works">How it works</Link>
+          <Link href="/wall">The wall</Link>
         </nav>
         <nav aria-label="Help">
           <p className="foot-head">Help</p>

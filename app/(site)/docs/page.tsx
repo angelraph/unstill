@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 const NAV = [
   { group: "Start", items: [["quickstart", "Quickstart"], ["studio", "Studio tour"], ["shortcuts", "Keyboard shortcuts"]] },
   { group: "Direct", items: [["directives", "Directives"], ["voice", "Direct by voice"], ["events", "Events and cue sheets"], ["queue", "The queue"]] },
-  { group: "Keep", items: [["takes", "Takes and replay"], ["branch", "Branching: what if"], ["share", "Share a take"], ["photo", "Your photograph"], ["credits", "Credit guard"], ["record", "Recording"]] },
+  { group: "Keep", items: [["takes", "Takes and replay"], ["branch", "Branching: what if"], ["share", "Share a take"], ["wall", "The wall"], ["photo", "Your photograph"], ["credits", "Credit guard"], ["record", "Recording"]] },
   { group: "Build", items: [["self-host", "Self hosting"], ["troubleshooting", "Troubleshooting"]] },
 ];
 
@@ -329,10 +329,29 @@ export default function Docs() {
             <li>
               Describe what is in it in one line. This is required: the photograph pins the first frame, and these words
               keep Orbis on that place afterwards. Without them Orbis drifts to a place of its own within a chunk or two.
+              When the deployment has an Anthropic key, the line is written for you as soon as you choose the photo; edit
+              any word you like.
             </li>
             <li>Roll. The badge on the stage reads Anchored to photo when Orbis confirms the image.</li>
           </ol>
           <p>Landscape images close to photoreal give the most faithful openings.</p>
+        </section>
+
+        <section id="wall">
+          <h2>The wall</h2>
+          <p>
+            <Link href="/wall">The wall</Link> is a public page of takes people chose to share. A post is the take itself: the
+            world, the seed and every beat with its chunk. No video and no photo is stored.
+          </p>
+          <ol>
+            <li>Direct a run and press Cut. The take appears under Takes.</li>
+            <li>Press Post to the wall, give it a title and, if you like, your name, then Post.</li>
+            <li>Anyone can open the card in the studio, replay it on Orbis, or pick a beat under What if, after and branch it.</li>
+          </ol>
+          <p>
+            Takes that open on a photograph stay private. Posts are checked on the server, length capped and rate limited,
+            and posting the same take twice keeps one card.
+          </p>
         </section>
 
         <section id="credits">

@@ -254,6 +254,47 @@
   margin-top: 8px;
 }
 
+.takes li > .btn-quiet,
+.wall-form,
+.wall-posted {
+  margin: 8px 0 0 46px;
+}
+
+.wall-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.wall-form input {
+  flex: 1 1 140px;
+  min-width: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  background: var(--night-2);
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+}
+
+.wall-error {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 12px;
+  color: #f4c9ca;
+}
+
+.wall-posted {
+  font-size: 12px;
+  color: var(--amber);
+}
+
+.wall-posted a {
+  color: inherit;
+  text-decoration: underline;
+}
+
 .branch {
   display: flex;
   flex-wrap: wrap;
