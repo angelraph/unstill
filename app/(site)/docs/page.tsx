@@ -329,7 +329,7 @@ export default function Docs() {
             <li>
               Describe what is in it in one line. This is required: the photograph pins the first frame, and these words
               keep Orbis on that place afterwards. Without them Orbis drifts to a place of its own within a chunk or two.
-              When the deployment has an Anthropic key, the line is written for you as soon as you choose the photo; edit
+              When the deployment has an OpenAI or Anthropic key, the line is written for you as soon as you choose the photo; edit
               any word you like.
             </li>
             <li>Roll. The badge on the stage reads Anchored to photo when Orbis confirms the image.</li>

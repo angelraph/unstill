@@ -62,7 +62,7 @@ const GROUPS: { title: string; items: [string, string][] }[] = [
       ],
       [
         "What happens to my photograph?",
-        "It is cropped in your browser and uploaded to your own Orbis session as the first frame. If automatic descriptions are on, the cropped image is also sent once to Claude to write the one line description, and is not stored. Photo takes can never be posted to the wall.",
+        "It is cropped in your browser and uploaded to your own Orbis session as the first frame. If automatic descriptions are on, the cropped image is also sent once to OpenAI or Anthropic to write the one line description, and is not stored. Photo takes can never be posted to the wall.",
       ],
     ],
   },

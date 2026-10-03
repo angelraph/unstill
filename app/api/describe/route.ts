@@ -12,15 +12,21 @@ const PROMPT = [
   "Use no negations, no camera words, no mood words and no quotes. Reply with the sentence only.",
 ].join(" ");
 
+const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
+
 /** GET tells the studio whether automatic descriptions are available. */
 export async function GET() {
-  return NextResponse.json({ enabled: Boolean(process.env.ANTHROPIC_API_KEY) }, { headers: { "Cache-Control": "no-store" } });
+  return NextResponse.json(
+    { enabled: Boolean(process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY) },
+    { headers: { "Cache-Control": "no-store" } },
+  );
 }
 
 /** POST { image: base64 JPEG } returns { caption }. The photo is not stored. */
 export async function POST(request: Request) {
   const key = process.env.ANTHROPIC_API_KEY;
-  if (!key) return NextResponse.json({ error: "Automatic descriptions are not set up." }, { status: 501 });
+  const openai = process.env.OPENAI_API_KEY;
+  if (!key && !openai) return NextResponse.json({ error: "Automatic descriptions are not set up." }, { status: 501 });
   if (limited(`describe:${clientIp(request)}`, 12, 60_000)) {
     return NextResponse.json({ error: "Too many photos at once. Try again in a minute." }, { status: 429 });
   }
@@ -35,9 +41,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Send one JPEG under 2 MB." }, { status: 400 });
   }
 
+  if (!key && openai) return describeWithOpenAI(openai, image);
+
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+    headers: { "x-api-key": key!, "anthropic-version": "2023-06-01", "content-type": "application/json" },
     body: JSON.stringify({
       model: MODEL,
       max_tokens: 80,
@@ -58,6 +66,34 @@ export async function POST(request: Request) {
   }
   const result = (await response.json()) as { content?: { type: string; text?: string }[] };
   const caption = tidyCaption(result.content?.find((c) => c.type === "text")?.text ?? "");
+  if (!caption) return NextResponse.json({ error: "No description came back." }, { status: 502 });
+  return NextResponse.json({ caption });
+}
+
+async function describeWithOpenAI(apiKey: string, image: string) {
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: OPENAI_MODEL,
+      max_tokens: 80,
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "image_url", image_url: { url: `data:image/jpeg;base64,${image}`, detail: "low" } },
+            { type: "text", text: PROMPT },
+          ],
+        },
+      ],
+    }),
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    return NextResponse.json({ error: `The description service failed (${response.status}).` }, { status: 502 });
+  }
+  const result = (await response.json()) as { choices?: { message?: { content?: string } }[] };
+  const caption = tidyCaption(result.choices?.[0]?.message?.content ?? "");
   if (!caption) return NextResponse.json({ error: "No description came back." }, { status: 502 });
   return NextResponse.json({ caption });
 }

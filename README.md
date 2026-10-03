@@ -52,7 +52,7 @@ Visko describes Live Models through six pillars. This is where each one shows up
 | --- | --- |
 | Watches | Three locked worlds: The Corner (film and media), The Aisle (retail), The Bay (robotics and training). Each card in the studio says what the place is for |
 | Your photograph | Cropped to 16:9 in the browser, uploaded, and set as the first frame with `set_image`. A one line description holds Orbis to the photographed place after the first frame |
-| Automatic description | When `ANTHROPIC_API_KEY` is set, the studio describes your photograph for you the moment you choose it (Claude Haiku 4.5 through `/api/describe`). The line stays editable. The photo is sent once and never stored. Without the key the field is simply typed by hand |
+| Automatic description | When `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` is set, the studio describes your photograph for you the moment you choose it (GPT-4o mini or Claude Haiku 4.5 through `/api/describe`). The line stays editable. The photo is sent once and never stored. Without the key the field is simply typed by hand |
 | Direction deck | Hour, weather, occupancy and camera, four event pads per Watch, keyboard shortcuts, and a free beat line |
 | Direct by voice | Say "action", "rain, then night", "have the taxi pull up", "hold", "resume", "cut". Parsed in order and released on the beat |
 | Continuity compiler | The opening builds the world once. Every prompt after it names one visible change, following the Orbis prompt guide |
@@ -84,7 +84,7 @@ flowchart LR
   T -->|replay, branch, share link| Q
   T -->|post| W[/api/wall + Upstash Redis/]
   W -->|replay, branch| Q
-  P[Photo] -->|/api/describe, Claude Haiku| C
+  P[Photo] -->|/api/describe, GPT-4o mini or Claude Haiku| C
   P -->|set_image| O
   G[Credit guard] -->|cut, release| O
   K[Server: /api/token] -->|one hour JWT, Orbis only| O
@@ -123,13 +123,15 @@ Open http://localhost:3000 for the site and http://localhost:3000/studio for the
 | `WALL_ADMIN_KEY` | Optional | Any secret string. Lets you remove a post: `DELETE /api/wall?id=...&key=...` |
 | `ANTHROPIC_API_KEY` | Optional | Turns on automatic photo descriptions. From console.anthropic.com. Roughly a tenth of a cent per photo with Haiku |
 | `ANTHROPIC_MODEL` | Optional | Defaults to `claude-haiku-4-5-20251001` |
+| `OPENAI_API_KEY` | Optional | The alternative for photo descriptions, from platform.openai.com. Used when no Anthropic key is set |
+| `OPENAI_MODEL` | Optional | Defaults to `gpt-4o-mini` |
 
 No key ever reaches the browser. `app/api/token/route.ts` exchanges the Reactor key for a one hour JWT scoped to `reactor/visko-orbis-stable` and a single session. Sessions start only when someone presses Go live, and Cut, Release GPU or the credit guard ends them.
 
 ## Deploy on Vercel
 
 1. Import this repository at vercel.com/new. The framework preset is Next.js.
-2. Under Environment Variables add `REACTOR_API_KEY` (and optionally `ANTHROPIC_API_KEY` and `WALL_ADMIN_KEY`).
+2. Under Environment Variables add `REACTOR_API_KEY` (and optionally `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`, and `WALL_ADMIN_KEY`).
 3. Under Storage, connect Upstash for Redis to turn on the wall.
 4. Deploy.
 
@@ -157,4 +159,4 @@ tests/                       Vitest suite
 
 ## Built with
 
-Next.js 16, React 19, `@reactor-team/js-sdk`, Vitest, Upstash Redis, Claude Haiku 4.5 for photo descriptions, and Visko Orbis Stable served by Reactor.
+Next.js 16, React 19, `@reactor-team/js-sdk`, Vitest, Upstash Redis, GPT-4o mini or Claude Haiku 4.5 for photo descriptions, and Visko Orbis Stable served by Reactor.
